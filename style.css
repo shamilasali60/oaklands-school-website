@@ -1,9 +1,9 @@
-/* --- CSS Variables for the New Green Theme --- */
+/* --- CSS Variables for the Green Theme --- */
 :root {
     --primary-color: #15803d; /* Deep Professional Green */
     --secondary-color: #22c55e; /* Bright Green for accents */
     --bg-light: #f3f4f6; /* Light Grey */
-    --bg-white: #ffffff; /* Light Grey */
+    --bg-white: #ffffff; /* White */
     --text-dark: #1f2937; /* Dark Grey for text */
     --text-light: #6b7280; /* Medium Grey for secondary text */
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -40,7 +40,7 @@ ul { list-style: none; }
     position: sticky;
     top: 0;
     z-index: 1000;
-    padding: 15px 0;
+    padding: 10px 0;
 }
 
 .nav-container {
@@ -49,12 +49,16 @@ ul { list-style: none; }
     align-items: center;
 }
 
-/* INCREASED LOGO SIZE */
+/* LOGO STYLING UPDATED FOR IMAGE */
 .logo {
-    font-size: 2.2rem; /* Made much bigger! */
-    font-weight: 700;
-    color: var(--primary-color);
-    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+}
+
+.site-logo {
+    height: 65px; /* This controls how tall the logo is */
+    width: auto;  /* Keeps the logo from stretching */
+    object-fit: contain;
 }
 
 .nav-links {
@@ -93,7 +97,6 @@ ul { list-style: none; }
     color: var(--bg-white);
 }
 
-/* Changed overlay to Green */
 .hero-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -147,7 +150,7 @@ ul { list-style: none; }
 /* --- General Sections --- */
 .section-padding { padding: 80px 0; }
 .bg-light { background-color: var(--bg-light); }
-.bg-dark { background-color: var(--primary-color); } /* Green background for contact */
+.bg-dark { background-color: var(--primary-color); }
 .text-white { color: var(--bg-white); }
 .text-center { text-align: center; }
 
@@ -339,5 +342,5 @@ footer {
     .nav-links { display: none; } 
     .hero h1 { font-size: 2.5rem; }
     .motto { font-size: 1.1rem; }
-    .logo { font-size: 1.8rem; } /* Slightly smaller on mobile, but still big */
+    .site-logo { height: 50px; } /* Make logo slightly smaller on mobile */
 }
