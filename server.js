@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const { Contact, Staff } = require('./models'); // Import our models
 
 const app = express();
 app.use(cors());
@@ -12,13 +13,57 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// A simple test route for the school website
+// ===== ROUTES =====
+
+// 1. Homepage
 app.get('/', (req, res) => {
-  res.send(' Welcome to the Oaklands School API!');
+  res.send(' Welcome to Oaklands School API!');
+});
+
+// 2. POST /contact - Save a contact form submission
+app.post('/contact', async (req, res) => {
+  try {
+    const newContact = new Contact(req.body);
+    await newContact.save();
+    res.status(201).json({ message: '✅ Message sent successfully!', data: newContact });
+  } catch (error) {
+    res.status(500).json({ message: '❌ Error saving message', error });
+  }
+});
+
+// 3. GET /contact - Get all contact messages (for admin)
+app.get('/contact', async (req, res) => {
+  try {
+    const messages = await Contact.find().sort({ date: -1 });
+    res.json({ messages });
+  } catch (error) {
+    res.status(500).json({ message: '❌ Error fetching messages', error });
+  }
+});
+
+// 4. GET /staff - Get all staff members
+app.get('/staff', async (req, res) => {
+  try {
+    const staff = await Staff.find();
+    res.json({ staff });
+  } catch (error) {
+    res.status(500).json({ message: '❌ Error fetching staff', error });
+  }
+});
+
+// 5. POST /staff - Add a new staff member (for admin)
+app.post('/staff', async (req, res) => {
+  try {
+    const newStaff = new Staff(req.body);
+    await newStaff.save();
+    res.status(201).json({ message: '✅ Staff added successfully!', data: newStaff });
+  } catch (error) {
+    res.status(500).json({ message: '❌ Error adding staff', error });
+  }
 });
 
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Oaklands Server running on http://localhost:${PORT}`);
+  console.log(` Oaklands Server running on http://localhost:${PORT}`);
 });
