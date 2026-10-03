@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Oaklands School</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f7f6; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; border-bottom: 2px solid #f1c40f; padding-bottom: 10px; }
+        .message-card { background: #ecf0f1; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+        .message-card strong { color: #2c3e50; }
+        form { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        input, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #2c3e50; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #f1c40f; color: #2c3e50; }
+        .nav-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #2c3e50; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="nav-link">← Back to Main Website</a>
+        
+        <h2>📬 Contact Messages</h2>
+        <div id="messages-list">Loading messages...</div>
+
+        <h2 style="margin-top: 40px;">➕ Add New Staff Member</h2>
+        <form id="add-staff-form">
+            <input type="text" id="staffName" placeholder="Full Name" required>
+            <input type="text" id="staffRole" placeholder="Role (e.g., Science Teacher)" required>
+            <input type="url" id="staffPhoto" placeholder="Photo URL (e.g., https://example.com/photo.jpg)">
+            <textarea id="staffBio" placeholder="Short Biography" required></textarea>
+            <button type="submit">Add Staff Member</button>
+        </form>
+        <p id="staff-status" style="margin-top: 10px; font-weight: bold;"></p>
+    </div>
+
+    <script>
+        // 1. Load Contact Messages
+        async function loadMessages() {
+            const response = await fetch('/contact');
+            const data = await response.json();
+            const list = document.getElementById('messages-list');
+            
+            if (data.messages.length === 0) {
+                list.innerHTML = '<p>No messages yet.</p>';
+                return;
+            }
+
+            list.innerHTML = data.messages.map(msg => `
+                <div class="message-card">
+                    <strong>${msg.name}</strong> (${msg.email})<br>
+                    <small>${new Date(msg.date).toLocaleDateString()}</small><br>
+                    <p>${msg.message}</p>
+                </div>
+            `).join('');
+        }
+
+        // 2. Handle Add Staff Form
+        document.getElementById('add-staff-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const status = document.getElementById('staff-status');
+            status.innerText = 'Adding...';
+            
+            const newStaff = {
+                name: document.getElementById('staffName').value,
+                role: document.getElementById('staffRole').value,
+                photoUrl: document.getElementById('staffPhoto').value,
+                bio: document.getElementById('staffBio').value
+            };
+
+            const response = await fetch('/staff', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newStaff)
+            });
+
+            if (response.ok) {
+                status.innerText = '✅ Staff member added successfully!';
+                status.style.color = 'green';
+                document.getElementById('add-staff-form').reset();
+            } else {
+                status.innerText = '❌ Error adding staff.';
+                status.style.color = 'red';
+            }
+        });
+
+        // Load messages on page load
+        loadMessages();
+    </script>
+</body>
+</html>
