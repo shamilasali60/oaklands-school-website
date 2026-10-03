@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // THIS IS THE NEW PART: Tell Express to serve the 'public' folder
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
