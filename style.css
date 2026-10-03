@@ -1,11 +1,11 @@
-/* --- CSS Variables for Easy Theming --- */
+/* --- CSS Variables for the New Green Theme --- */
 :root {
-    --primary-color: #1a365d; /* Deep Navy */
-    --secondary-color: #d69e2e; /* Elegant Gold */
-    --text-dark: #2d3748;
-    --text-light: #718096;
-    --bg-light: #f7fafc;
-    --white: #ffffff;
+    --primary-color: #15803d; /* Deep Professional Green */
+    --secondary-color: #22c55e; /* Bright Green for accents */
+    --bg-light: #f3f4f6; /* Light Grey */
+    --bg-white: #ffffff; /* White */
+    --text-dark: #1f2937; /* Dark Grey for text */
+    --text-light: #6b7280; /* Medium Grey for secondary text */
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
@@ -19,7 +19,7 @@
 }
 
 body {
-    background-color: var(--white);
+    background-color: var(--bg-white);
     color: var(--text-dark);
     line-height: 1.6;
 }
@@ -35,7 +35,7 @@ ul { list-style: none; }
 
 /* --- Navigation --- */
 .navbar {
-    background: var(--white);
+    background: var(--bg-white);
     box-shadow: var(--shadow);
     position: sticky;
     top: 0;
@@ -49,10 +49,12 @@ ul { list-style: none; }
     align-items: center;
 }
 
+/* INCREASED LOGO SIZE */
 .logo {
-    font-size: 1.5rem;
+    font-size: 2.2rem; /* Made much bigger! */
     font-weight: 700;
     color: var(--primary-color);
+    letter-spacing: -0.5px;
 }
 
 .nav-links {
@@ -67,11 +69,11 @@ ul { list-style: none; }
     transition: color 0.3s;
 }
 
-.nav-links a:hover { color: var(--secondary-color); }
+.nav-links a:hover { color: var(--primary-color); }
 
 .btn-nav {
     background: var(--primary-color);
-    color: var(--white) !important;
+    color: var(--bg-white) !important;
     padding: 8px 20px;
     border-radius: 5px;
     transition: background 0.3s;
@@ -88,13 +90,14 @@ ul { list-style: none; }
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: var(--white);
+    color: var(--bg-white);
 }
 
+/* Changed overlay to Green */
 .hero-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(26, 54, 93, 0.75); /* Navy overlay */
+    background: rgba(21, 128, 61, 0.8); /* Green overlay */
 }
 
 .hero-content {
@@ -111,7 +114,7 @@ ul { list-style: none; }
 
 .motto {
     font-size: 1.4rem;
-    color: var(--secondary-color);
+    color: #bbf7d0; /* Very light green for motto */
     font-style: italic;
     margin-bottom: 20px;
     font-weight: 600;
@@ -120,12 +123,12 @@ ul { list-style: none; }
 .subtitle {
     font-size: 1.2rem;
     margin-bottom: 30px;
-    opacity: 0.9;
+    opacity: 0.95;
 }
 
 .btn-primary {
     display: inline-block;
-    background: var(--secondary-color);
+    background: var(--bg-white);
     color: var(--primary-color);
     padding: 12px 30px;
     border-radius: 5px;
@@ -138,14 +141,14 @@ ul { list-style: none; }
 
 .btn-primary:hover {
     transform: translateY(-3px);
-    background: #ecc94b;
+    background: var(--bg-light);
 }
 
 /* --- General Sections --- */
 .section-padding { padding: 80px 0; }
 .bg-light { background-color: var(--bg-light); }
-.bg-dark { background-color: var(--primary-color); }
-.text-white { color: var(--white); }
+.bg-dark { background-color: var(--primary-color); } /* Green background for contact */
+.text-white { color: var(--bg-white); }
 .text-center { text-align: center; }
 
 .section-title {
@@ -174,7 +177,7 @@ ul { list-style: none; }
 }
 
 .feature-card {
-    background: var(--white);
+    background: var(--bg-white);
     padding: 40px 30px;
     border-radius: 10px;
     box-shadow: var(--shadow);
@@ -189,13 +192,13 @@ ul { list-style: none; }
 
 .feature-card i {
     font-size: 3rem;
-    color: var(--secondary-color);
+    color: var(--primary-color);
     margin-bottom: 20px;
 }
 
 .feature-card h3 {
     margin-bottom: 15px;
-    color: var(--primary-color);
+    color: var(--text-dark);
 }
 
 /* --- News & Staff Cards --- */
@@ -206,7 +209,7 @@ ul { list-style: none; }
 }
 
 .news-card, .staff-card {
-    background: var(--white);
+    background: var(--bg-white);
     border-radius: 10px;
     overflow: hidden;
     box-shadow: var(--shadow);
@@ -218,13 +221,13 @@ ul { list-style: none; }
 }
 
 .news-card {
-    border-top: 5px solid var(--secondary-color);
+    border-top: 5px solid var(--primary-color);
     padding: 25px;
 }
 
 .news-card .type {
     background: var(--primary-color);
-    color: var(--white);
+    color: var(--bg-white);
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.8rem;
@@ -234,7 +237,7 @@ ul { list-style: none; }
 }
 
 .news-card h3 {
-    color: var(--primary-color);
+    color: var(--text-dark);
     margin-bottom: 10px;
 }
 
@@ -256,16 +259,16 @@ ul { list-style: none; }
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 15px;
-    border: 3px solid var(--secondary-color);
+    border: 3px solid var(--primary-color);
 }
 
 .staff-card h3 {
-    color: var(--primary-color);
+    color: var(--text-dark);
     margin-bottom: 5px;
 }
 
 .staff-card .role {
-    color: var(--secondary-color);
+    color: var(--primary-color);
     font-weight: 600;
     font-size: 0.9rem;
     margin-bottom: 15px;
@@ -283,7 +286,7 @@ ul { list-style: none; }
 .contact-wrapper {
     max-width: 600px;
     margin: 0 auto;
-    background: var(--white);
+    background: var(--bg-white);
     padding: 40px;
     border-radius: 10px;
     box-shadow: var(--shadow-hover);
@@ -301,15 +304,17 @@ ul { list-style: none; }
 .form-group input, .form-group textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e5e7eb;
     border-radius: 5px;
     font-size: 1rem;
     transition: border-color 0.3s;
+    background-color: #f9fafb;
 }
 
 .form-group input:focus, .form-group textarea:focus {
     outline: none;
-    border-color: var(--secondary-color);
+    border-color: var(--primary-color);
+    background-color: var(--bg-white);
 }
 
 .full-width { width: 100%; margin-top: 10px; }
@@ -322,8 +327,8 @@ ul { list-style: none; }
 
 /* --- Footer --- */
 footer {
-    background: #112240;
-    color: var(--white);
+    background: #064e3b; /* Very dark green */
+    color: var(--bg-white);
     text-align: center;
     padding: 20px 0;
     font-size: 0.9rem;
@@ -331,7 +336,8 @@ footer {
 
 /* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
-    .nav-links { display: none; } /* Simplified for mobile */
+    .nav-links { display: none; } 
     .hero h1 { font-size: 2.5rem; }
     .motto { font-size: 1.1rem; }
+    .logo { font-size: 1.8rem; } /* Slightly smaller on mobile, but still big */
 }
