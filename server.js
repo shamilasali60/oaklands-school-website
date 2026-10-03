@@ -12,7 +12,7 @@ app.use(express.static(__dirname));
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+  .catch(err => console.error(' MongoDB connection error:', err));
 
 // ===== API ROUTES =====
 
@@ -27,6 +27,11 @@ app.post('/contact', async (req, res) => {
 });
 app.get('/contact', async (req, res) => {
   try { res.json({ messages: await Contact.find().sort({ date: -1 }) }); } 
+  catch (error) { res.status(500).json({ message: '❌ Error', error }); }
+});
+// NEW: Delete Contact Route
+app.delete('/contact/:id', async (req, res) => {
+  try { await Contact.findByIdAndDelete(req.params.id); res.json({ message: '✅ Message deleted!' }); } 
   catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
 
@@ -52,7 +57,7 @@ app.post('/news', async (req, res) => {
   try { const n = new News(req.body); await n.save(); res.status(201).json({ message: '✅ Added!', data: n }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
 
-// NEW: Feature Routes (Why Choose Oaklands)
+// Feature Routes
 app.get('/features', async (req, res) => {
   try { res.json({ features: await Feature.find() }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
