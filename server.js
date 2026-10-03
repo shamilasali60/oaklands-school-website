@@ -3,12 +3,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path'); 
-const { Contact, Staff, News } = require('./models'); 
+const { Contact, Staff, News, Feature } = require('./models'); 
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
 app.use(express.static(__dirname));
 
 mongoose.connect(process.env.MONGODB_URI)
@@ -21,74 +20,51 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// 1. POST /contact
+// Contact Routes
 app.post('/contact', async (req, res) => {
-  try {
-    const newContact = new Contact(req.body);
-    await newContact.save();
-    res.status(201).json({ message: '✅ Message sent successfully!', data: newContact });
-  } catch (error) { res.status(500).json({ message: '❌ Error saving message', error }); }
+  try { const newContact = new Contact(req.body); await newContact.save(); res.status(201).json({ message: '✅ Message sent!', data: newContact }); } 
+  catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
-
-// 2. GET /contact
 app.get('/contact', async (req, res) => {
-  try {
-    const messages = await Contact.find().sort({ date: -1 });
-    res.json({ messages });
-  } catch (error) { res.status(500).json({ message: '❌ Error fetching messages', error }); }
+  try { res.json({ messages: await Contact.find().sort({ date: -1 }) }); } 
+  catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
 
-// 3. GET /staff
+// Staff Routes
 app.get('/staff', async (req, res) => {
-  try {
-    const staff = await Staff.find();
-    res.json({ staff });
-  } catch (error) { res.status(500).json({ message: ' Error fetching staff', error }); }
+  try { res.json({ staff: await Staff.find() }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
-
-// 4. POST /staff (Add)
 app.post('/staff', async (req, res) => {
-  try {
-    const newStaff = new Staff(req.body);
-    await newStaff.save();
-    res.status(201).json({ message: '✅ Staff added successfully!', data: newStaff });
-  } catch (error) { res.status(500).json({ message: '❌ Error adding staff', error }); }
+  try { const s = new Staff(req.body); await s.save(); res.status(201).json({ message: '✅ Added!', data: s }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
-
-// NEW: PUT /staff/:id (Edit)
 app.put('/staff/:id', async (req, res) => {
-  try {
-    const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json({ message: '✅ Staff updated successfully!', data: updatedStaff });
-  } catch (error) { res.status(500).json({ message: '❌ Error updating staff', error }); }
+  try { const s = await Staff.findByIdAndUpdate(req.params.id, req.body, { new: true }); res.json({ message: '✅ Updated!', data: s }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
-
-// NEW: DELETE /staff/:id (Delete)
 app.delete('/staff/:id', async (req, res) => {
-  try {
-    await Staff.findByIdAndDelete(req.params.id);
-    res.json({ message: '✅ Staff deleted successfully!' });
-  } catch (error) { res.status(500).json({ message: ' Error deleting staff', error }); }
+  try { await Staff.findByIdAndDelete(req.params.id); res.json({ message: '✅ Deleted!' }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
 
-// 5. GET /news
+// News Routes
 app.get('/news', async (req, res) => {
-  try {
-    const news = await News.find().sort({ date: -1 });
-    res.json({ news });
-  } catch (error) { res.status(500).json({ message: '❌ Error fetching news', error }); }
+  try { res.json({ news: await News.find().sort({ date: -1 }) }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
+});
+app.post('/news', async (req, res) => {
+  try { const n = new News(req.body); await n.save(); res.status(201).json({ message: '✅ Added!', data: n }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
 
-// 6. POST /news
-app.post('/news', async (req, res) => {
-  try {
-    const newNews = new News(req.body);
-    await newNews.save();
-    res.status(201).json({ message: '✅ News added successfully!', data: newNews });
-  } catch (error) { res.status(500).json({ message: '❌ Error adding news', error }); }
+// NEW: Feature Routes (Why Choose Oaklands)
+app.get('/features', async (req, res) => {
+  try { res.json({ features: await Feature.find() }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
+});
+app.post('/features', async (req, res) => {
+  try { const f = new Feature(req.body); await f.save(); res.status(201).json({ message: '✅ Added!', data: f }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
+});
+app.put('/features/:id', async (req, res) => {
+  try { const f = await Feature.findByIdAndUpdate(req.params.id, req.body, { new: true }); res.json({ message: '✅ Updated!', data: f }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
+});
+app.delete('/features/:id', async (req, res) => {
+  try { await Feature.findByIdAndDelete(req.params.id); res.json({ message: '✅ Deleted!' }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(` Oaklands Server running on port ${PORT}`);
-});
+app.listen(PORT, () => { console.log(`🚀 Server running on port ${PORT}`); });
