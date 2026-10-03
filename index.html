@@ -4,20 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oaklands Nursery and Primary School</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="container nav-container">
-            <div class="logo">
-                <i class="fas fa-graduation-cap"></i> Oaklands
-            </div>
+            <div class="logo"><i class="fas fa-graduation-cap"></i> Oaklands</div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about">About</a></li>
@@ -28,7 +22,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <header id="home" class="hero">
         <div class="hero-overlay"></div>
         <div class="container hero-content">
@@ -39,11 +32,8 @@
         </div>
     </header>
 
-    <!-- About / Our Story Section -->
     <section id="about" class="section-padding bg-light">
         <div class="container">
-            
-            <!-- The New Story Narrative -->
             <div style="text-align: center; max-width: 800px; margin: 0 auto 60px auto;">
                 <h2 class="section-title">Our Story</h2>
                 <p style="font-size: 1.15rem; color: var(--text-dark); line-height: 1.8;">
@@ -51,68 +41,37 @@
                 </p>
             </div>
 
-            <!-- Why Choose Oaklands Cards -->
             <h2 class="section-title">Why Choose Oaklands?</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <i class="fas fa-book-open"></i>
-                    <h3>Academic Excellence</h3>
-                    <p>A rigorous curriculum designed to challenge and inspire students at every level.</p>
-                </div>
-                <div class="feature-card">
-                    <i class="fas fa-users"></i>
-                    <h3>Strong Community</h3>
-                    <p>A welcoming environment where parents, teachers, and students work together.</p>
-                </div>
-                <div class="feature-card">
-                    <i class="fas fa-palette"></i>
-                    <h3>Arts & Sports</h3>
-                    <p>Comprehensive programs in music, dance, drama, and athletics to build well-rounded individuals.</p>
-                </div>
+            <!-- DYNAMIC FEATURES LIST -->
+            <div id="features-list" class="features-grid">
+                <p class="loading-text">Loading features...</p>
             </div>
         </div>
     </section>
 
-    <!-- News & Events Section -->
     <section id="news" class="section-padding">
         <div class="container">
             <h2 class="section-title">News & Events</h2>
-            <div id="news-list" class="news-grid">
-                <p class="loading-text">Loading latest updates...</p>
-            </div>
+            <div id="news-list" class="news-grid"><p class="loading-text">Loading latest updates...</p></div>
         </div>
     </section>
 
-    <!-- Staff Directory Section -->
     <section id="staff" class="section-padding bg-light">
         <div class="container">
             <h2 class="section-title">Meet Our Dedicated Staff</h2>
-            <div id="staff-list" class="staff-grid">
-                <p class="loading-text">Loading staff members...</p>
-            </div>
+            <div id="staff-list" class="staff-grid"><p class="loading-text">Loading staff members...</p></div>
         </div>
     </section>
 
-    <!-- Contact Section -->
     <section id="contact" class="section-padding bg-dark">
         <div class="container">
             <h2 class="section-title text-white">Get in Touch</h2>
-            <p class="text-white text-center" style="margin-bottom: 30px;">We would love to hear from you. Send us a message below!</p>
-            
+            <p class="text-white text-center" style="margin-bottom: 30px;">We would love to hear from you.</p>
             <div class="contact-wrapper">
                 <form id="contact-form" class="contact-form">
-                    <div class="form-group">
-                        <label>Your Name</label>
-                        <input type="text" id="name" placeholder="John Doe" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Your Email</label>
-                        <input type="email" id="email" placeholder="john@example.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Your Message</label>
-                        <textarea id="message" placeholder="How can we help you?" required></textarea>
-                    </div>
+                    <div class="form-group"><label>Your Name</label><input type="text" id="name" placeholder="John Doe" required></div>
+                    <div class="form-group"><label>Your Email</label><input type="email" id="email" placeholder="john@example.com" required></div>
+                    <div class="form-group"><label>Your Message</label><textarea id="message" placeholder="How can we help you?" required></textarea></div>
                     <button type="submit" class="btn-primary full-width">Send Message</button>
                     <p id="form-status" class="form-status"></p>
                 </form>
@@ -120,13 +79,7 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Oaklands Nursery and Primary School. All rights reserved.</p>
-        </div>
-    </footer>
-
+    <footer><div class="container"><p>&copy; 2026 Oaklands Nursery and Primary School. All rights reserved.</p></div></footer>
     <script src="script.js"></script>
 </body>
 </html>
