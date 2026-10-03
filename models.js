@@ -22,3 +22,15 @@ const Staff = mongoose.model('Staff', staffSchema);
 
 // Export them so we can use them in server.js
 module.exports = { Contact, Staff };
+// 3. Model for News & Events
+const newsSchema = new mongoose.Schema({
+  title: String,
+  date: { type: Date, default: Date.now },
+  description: String,
+  type: String // e.g., "Event", "Announcement", "Sports"
+});
+
+const News = mongoose.model('News', newsSchema);
+
+// Export all models
+module.exports = { Contact, Staff, News };
