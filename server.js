@@ -18,7 +18,10 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // ===== API ROUTES =====
-
+// Serve the Admin Dashboard
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
 // 1. POST /contact - Save a contact form submission
 app.post('/contact', async (req, res) => {
   try {
