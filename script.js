@@ -66,3 +66,43 @@ contactForm.addEventListener('submit', async (e) => {
         formStatus.style.color = 'red';
     }
 });
+// 3. Load News & Events
+async function loadNews() {
+    const newsList = document.getElementById('news-list');
+    
+    if (!newsList) return; // Only run if we're on the homepage
+    
+    try {
+        const response = await fetch('/news');
+        const data = await response.json();
+        
+        newsList.innerHTML = '';
+
+        if (data.news.length === 0) {
+            newsList.innerHTML = '<p>No news or events yet.</p>';
+            return;
+        }
+
+        data.news.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'news-card';
+            card.innerHTML = `
+                <span class="type">${item.type || 'Announcement'}</span>
+                <h3>${item.title}</h3>
+                <span class="date">${new Date(item.date).toLocaleDateString()}</span>
+                <p>${item.description}</p>
+            `;
+            newsList.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Error loading news:', error);
+        newsList.innerHTML = '<p>Error loading news.</p>';
+    }
+}
+
+// Add news loading to the page load event
+document.addEventListener('DOMContentLoaded', () => {
+    loadStaff();
+    loadNews();
+});
