@@ -7,14 +7,18 @@
     <style>
         body { font-family: sans-serif; padding: 20px; background: #f4f7f6; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; border-bottom: 2px solid #f1c40f; padding-bottom: 10px; }
-        .message-card { background: #ecf0f1; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
-        .message-card strong { color: #2c3e50; }
+        h2 { color: #15803d; border-bottom: 2px solid #22c55e; padding-bottom: 10px; }
+        .message-card, .staff-manage-card { background: #f3f4f6; padding: 15px; margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .message-card strong { color: #1f2937; }
         form { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
         input, textarea, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
-        button { background: #2c3e50; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1rem; }
-        button:hover { background: #f1c40f; color: #2c3e50; }
-        .nav-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #2c3e50; font-weight: bold; }
+        button { padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; border: none; }
+        .btn-primary { background: #15803d; color: white; width: 100%; font-size: 1rem; }
+        .btn-primary:hover { background: #22c55e; }
+        .btn-edit { background: #3b82f6; color: white; margin-right: 5px; }
+        .btn-delete { background: #ef4444; color: white; }
+        .nav-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #15803d; font-weight: bold; }
+        .staff-info { flex-grow: 1; }
     </style>
 </head>
 <body>
@@ -24,17 +28,20 @@
         <h2> Contact Messages</h2>
         <div id="messages-list">Loading messages...</div>
 
-        <h2 style="margin-top: 40px;">➕ Add New Staff Member</h2>
+        <h2 style="margin-top: 40px;">👥 Manage Current Staff</h2>
+        <div id="manage-staff-list">Loading staff...</div>
+
+        <h2 style="margin-top: 40px;" id="form-title">➕ Add New Staff Member</h2>
         <form id="add-staff-form">
             <input type="text" id="staffName" placeholder="Full Name" required>
             <input type="text" id="staffRole" placeholder="Role (e.g., Science Teacher)" required>
-            <input type="url" id="staffPhoto" placeholder="Photo URL (e.g., https://example.com/photo.jpg)">
+            <input type="url" id="staffPhoto" placeholder="Photo URL (optional)">
             <textarea id="staffBio" placeholder="Short Biography" required></textarea>
-            <button type="submit">Add Staff Member</button>
+            <button type="submit" class="btn-primary" id="staff-btn">Add Staff Member</button>
         </form>
         <p id="staff-status" style="margin-top: 10px; font-weight: bold;"></p>
 
-        <h2 style="margin-top: 40px;">📰 Add News / Event</h2>
+        <h2 style="margin-top: 40px;"> Add News / Event</h2>
         <form id="add-news-form">
             <input type="text" id="newsTitle" placeholder="Title (e.g., Sports Day)" required>
             <select id="newsType" required>
@@ -43,66 +50,118 @@
                 <option value="Sports">Sports</option>
             </select>
             <textarea id="newsDesc" placeholder="Description of the event..." required></textarea>
-            <button type="submit">Post News</button>
+            <button type="submit" class="btn-primary">Post News</button>
         </form>
         <p id="news-status" style="margin-top: 10px; font-weight: bold;"></p>
     </div>
 
     <script>
+        let currentEditId = null;
+
         // 1. Load Contact Messages
         async function loadMessages() {
             const list = document.getElementById('messages-list');
             try {
                 const response = await fetch('/contact');
                 const data = await response.json();
-                
-                if (data.messages.length === 0) {
-                    list.innerHTML = '<p>No messages yet.</p>';
-                    return;
-                }
-
+                if (data.messages.length === 0) { list.innerHTML = '<p>No messages yet.</p>'; return; }
                 list.innerHTML = data.messages.map(msg => `
                     <div class="message-card">
-                        <strong>${msg.name}</strong> (${msg.email})<br>
-                        <small>${new Date(msg.date).toLocaleDateString()}</small><br>
-                        <p>${msg.message}</p>
+                        <div><strong>${msg.name}</strong> (${msg.email})<br><small>${new Date(msg.date).toLocaleDateString()}</small><p>${msg.message}</p></div>
+                    </div>`).join('');
+            } catch (error) { list.innerHTML = '<p>Error loading messages. Please refresh in 30 seconds.</p>'; }
+        }
+
+        // 2. Load Staff for Management (Edit/Delete)
+        async function loadManageStaff() {
+            const list = document.getElementById('manage-staff-list');
+            try {
+                const response = await fetch('/staff');
+                const data = await response.json();
+                if (data.staff.length === 0) { list.innerHTML = '<p>No staff members to manage.</p>'; return; }
+                
+                list.innerHTML = data.staff.map(s => `
+                    <div class="staff-manage-card">
+                        <div class="staff-info">
+                            <strong>${s.name}</strong> - ${s.role}
+                        </div>
+                        <div>
+                            <button class="btn-edit" onclick="startEdit('${s._id}', '${s.name}', '${s.role}', '${s.photoUrl || ''}', '${s.bio}')">Edit</button>
+                            <button class="btn-delete" onclick="deleteStaff('${s._id}')">Delete</button>
+                        </div>
                     </div>
                 `).join('');
-            } catch (error) {
-                list.innerHTML = '<p>Error loading messages. The server might be waking up. Please refresh in 30 seconds.</p>';
+            } catch (error) { list.innerHTML = '<p>Error loading staff.</p>'; }
+        }
+
+        // 3. Start Editing a Staff Member
+        function startEdit(id, name, role, photo, bio) {
+            currentEditId = id;
+            document.getElementById('staffName').value = name;
+            document.getElementById('staffRole').value = role;
+            document.getElementById('staffPhoto').value = photo;
+            document.getElementById('staffBio').value = bio;
+            
+            document.getElementById('form-title').innerText = '️ Edit Staff Member';
+            document.getElementById('staff-btn').innerText = 'Update Staff Member';
+            document.getElementById('staff-status').innerText = 'Editing: ' + name;
+            document.getElementById('staff-status').style.color = 'blue';
+            
+            document.getElementById('add-staff-form').scrollIntoView({behavior: 'smooth'});
+        }
+
+        // 4. Delete a Staff Member
+        async function deleteStaff(id) {
+            if(confirm('Are you sure you want to delete this staff member?')) {
+                const response = await fetch(`/staff/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    loadManageStaff(); // Refresh the list
+                } else {
+                    alert('Error deleting staff.');
+                }
             }
         }
 
-        // 2. Handle Add Staff Form
+        // 5. Handle Add/Update Staff Form
         document.getElementById('add-staff-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('staff-status');
-            status.innerText = 'Adding...';
+            status.innerText = 'Saving...';
             
-            const newStaff = {
+            const staffData = {
                 name: document.getElementById('staffName').value,
                 role: document.getElementById('staffRole').value,
                 photoUrl: document.getElementById('staffPhoto').value,
                 bio: document.getElementById('staffBio').value
             };
 
-            const response = await fetch('/staff', {
-                method: 'POST',
+            const url = currentEditId ? `/staff/${currentEditId}` : '/staff';
+            const method = currentEditId ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newStaff)
+                body: JSON.stringify(staffData)
             });
 
             if (response.ok) {
-                status.innerText = '✅ Staff member added successfully!';
+                status.innerText = currentEditId ? '✅ Staff updated successfully!' : '✅ Staff added successfully!';
                 status.style.color = 'green';
                 document.getElementById('add-staff-form').reset();
+                
+                // Reset form state
+                currentEditId = null;
+                document.getElementById('form-title').innerText = '➕ Add New Staff Member';
+                document.getElementById('staff-btn').innerText = 'Add Staff Member';
+                
+                loadManageStaff(); // Refresh the list
             } else {
-                status.innerText = '❌ Error adding staff.';
+                status.innerText = ' Error saving staff.';
                 status.style.color = 'red';
             }
         });
 
-        // 3. Handle Add News Form
+        // 6. Handle Add News Form
         document.getElementById('add-news-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('news-status');
@@ -130,8 +189,9 @@
             }
         });
 
-        // Load messages when page opens
+        // Load data on page open
         loadMessages();
+        loadManageStaff();
     </script>
 </body>
 </html>
