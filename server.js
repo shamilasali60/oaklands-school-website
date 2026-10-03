@@ -63,7 +63,28 @@ app.post('/staff', async (req, res) => {
     res.status(500).json({ message: '❌ Error adding staff', error });
   }
 });
+// ===== NEWS ROUTES =====
 
+// 5. GET /news - Get all news items
+app.get('/news', async (req, res) => {
+  try {
+    const news = await News.find().sort({ date: -1 });
+    res.json({ news });
+  } catch (error) {
+    res.status(500).json({ message: '❌ Error fetching news', error });
+  }
+});
+
+// 6. POST /news - Add a new news item (for admin)
+app.post('/news', async (req, res) => {
+  try {
+    const newNews = new News(req.body);
+    await newNews.save();
+    res.status(201).json({ message: '✅ News added successfully!', data: newNews });
+  } catch (error) {
+    res.status(500).json({ message: '❌ Error adding news', error });
+  }
+});
 // Start the server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
