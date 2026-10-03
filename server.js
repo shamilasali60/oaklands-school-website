@@ -2,14 +2,15 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path'); // We need this to find the public folder
-const { Contact, Staff } = require('./models'); 
+const path = require('path'); 
+// FIX: We added 'News' to this list so the server knows about it!
+const { Contact, Staff, News } = require('./models'); 
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// THIS IS THE NEW PART: Tell Express to serve the 'public' folder
+// Tell Express to serve the files in the main folder
 app.use(express.static(__dirname));
 
 // Connect to MongoDB
@@ -18,10 +19,12 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // ===== API ROUTES =====
+
 // Serve the Admin Dashboard
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
+
 // 1. POST /contact - Save a contact form submission
 app.post('/contact', async (req, res) => {
   try {
@@ -63,7 +66,6 @@ app.post('/staff', async (req, res) => {
     res.status(500).json({ message: '❌ Error adding staff', error });
   }
 });
-// ===== NEWS ROUTES =====
 
 // 5. GET /news - Get all news items
 app.get('/news', async (req, res) => {
@@ -75,7 +77,7 @@ app.get('/news', async (req, res) => {
   }
 });
 
-// 6. POST /news - Add a new news item (for admin)
+// 6. POST /news - Add a new news item
 app.post('/news', async (req, res) => {
   try {
     const newNews = new News(req.body);
@@ -85,8 +87,9 @@ app.post('/news', async (req, res) => {
     res.status(500).json({ message: '❌ Error adding news', error });
   }
 });
+
 // Start the server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(` Oaklands Server running on http://localhost:${PORT}`);
+  console.log(` Oaklands Server running on port ${PORT}`);
 });
