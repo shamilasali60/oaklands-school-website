@@ -2,25 +2,24 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { Contact, Staff } = require('./models'); // Import our models
+const path = require('path'); // We need this to find the public folder
+const { Contact, Staff } = require('./models'); 
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// THIS IS THE NEW PART: Tell Express to serve the 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// ===== ROUTES =====
+// ===== API ROUTES =====
 
-// 1. Homepage
-app.get('/', (req, res) => {
-  res.send(' Welcome to Oaklands School API!');
-});
-
-// 2. POST /contact - Save a contact form submission
+// 1. POST /contact - Save a contact form submission
 app.post('/contact', async (req, res) => {
   try {
     const newContact = new Contact(req.body);
@@ -31,7 +30,7 @@ app.post('/contact', async (req, res) => {
   }
 });
 
-// 3. GET /contact - Get all contact messages (for admin)
+// 2. GET /contact - Get all contact messages
 app.get('/contact', async (req, res) => {
   try {
     const messages = await Contact.find().sort({ date: -1 });
@@ -41,7 +40,7 @@ app.get('/contact', async (req, res) => {
   }
 });
 
-// 4. GET /staff - Get all staff members
+// 3. GET /staff - Get all staff members
 app.get('/staff', async (req, res) => {
   try {
     const staff = await Staff.find();
@@ -51,7 +50,7 @@ app.get('/staff', async (req, res) => {
   }
 });
 
-// 5. POST /staff - Add a new staff member (for admin)
+// 4. POST /staff - Add a new staff member
 app.post('/staff', async (req, res) => {
   try {
     const newStaff = new Staff(req.body);
@@ -63,7 +62,7 @@ app.post('/staff', async (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(` Oaklands Server running on http://localhost:${PORT}`);
 });
