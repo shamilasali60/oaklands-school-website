@@ -87,6 +87,18 @@
 
         // Load messages on page load
         loadMessages();
+                <h2 style="margin-top: 40px;">📰 Add News / Event</h2>
+        <form id="add-news-form">
+            <input type="text" id="newsTitle" placeholder="Title (e.g., Sports Day)" required>
+            <select id="newsType" required style="padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="Event">Event</option>
+                <option value="Announcement">Announcement</option>
+                <option value="Sports">Sports</option>
+            </select>
+            <textarea id="newsDesc" placeholder="Description of the event..." required></textarea>
+            <button type="submit">Post News</button>
+        </form>
+        <p id="news-status" style="margin-top: 10px; font-weight: bold;"></p>
     </script>
 </body>
 </html>
