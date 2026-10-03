@@ -49,16 +49,42 @@ ul { list-style: none; }
     align-items: center;
 }
 
-/* LOGO STYLING UPDATED FOR IMAGE */
+/* --- CATCHY LOGO TEXT STYLING --- */
 .logo {
     display: flex;
     align-items: center;
+    gap: 15px; /* Space between image and text */
 }
 
 .site-logo {
-    height: 65px; /* This controls how tall the logo is */
-    width: auto;  /* Keeps the logo from stretching */
+    height: 65px; 
+    width: auto;  
     object-fit: contain;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+/* The big catchy font */
+.logo-title {
+    font-family: 'Playfair Display', serif; 
+    font-size: 1.8rem; 
+    font-weight: 700;
+    color: var(--primary-color);
+    letter-spacing: 0.5px;
+}
+
+/* The smaller subtitle */
+.logo-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.8rem; 
+    color: var(--text-light);
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 .nav-links {
@@ -342,5 +368,7 @@ footer {
     .nav-links { display: none; } 
     .hero h1 { font-size: 2.5rem; }
     .motto { font-size: 1.1rem; }
-    .site-logo { height: 50px; } /* Make logo slightly smaller on mobile */
+    .site-logo { height: 50px; } 
+    .logo-title { font-size: 1.4rem; }
+    .logo-subtitle { font-size: 0.7rem; }
 }
