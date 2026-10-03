@@ -1,108 +1,81 @@
-// 1. Load Staff Members when the page loads
-document.addEventListener('DOMContentLoaded', loadStaff);
+document.addEventListener('DOMContentLoaded', () => {
+    loadFeatures();
+    loadNews();
+    loadStaff();
+});
 
-async function loadStaff() {
-    const staffList = document.getElementById('staff-list');
-    
+// 1. Load Features (Why Choose Oaklands)
+async function loadFeatures() {
+    const list = document.getElementById('features-list');
+    if (!list) return;
     try {
-        // Fetch staff from our backend API
-        const response = await fetch('/staff');
+        const response = await fetch('/features');
         const data = await response.json();
-        
-        // Clear the "Loading..." text
-        staffList.innerHTML = '';
-
-        if (data.staff.length === 0) {
-            staffList.innerHTML = '<p>No staff members added yet.</p>';
+        list.innerHTML = '';
+        if (data.features.length === 0) {
+            list.innerHTML = '<p class="loading-text">No features added yet. Admin can add them in the dashboard.</p>';
             return;
         }
-
-        // Create a card for each staff member
-        data.staff.forEach(member => {
+        data.features.forEach(f => {
             const card = document.createElement('div');
-            card.className = 'staff-card';
-            card.innerHTML = `
-                <h3>${member.name}</h3>
-                <span class="role">${member.role}</span>
-                <p>${member.bio}</p>
-            `;
-            staffList.appendChild(card);
+            card.className = 'feature-card';
+            card.innerHTML = `<i class="fas ${f.icon}"></i><h3>${f.title}</h3><p>${f.description}</p>`;
+            list.appendChild(card);
         });
-
-    } catch (error) {
-        console.error('Error loading staff:', error);
-        staffList.innerHTML = '<p>Error loading staff members.</p>';
-    }
+    } catch (error) { list.innerHTML = '<p>Error loading features.</p>'; }
 }
 
-// 2. Handle Contact Form Submission
-const contactForm = document.getElementById('contact-form');
-const formStatus = document.getElementById('form-status');
-
-contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault(); // Stop page from refreshing
-
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const message = document.getElementById('message').value;
-
-    try {
-        // Send data to our backend API
-        const response = await fetch('/contact', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, message })
-        });
-
-        if (response.ok) {
-            formStatus.innerText = '✅ Message sent successfully! We will get back to you soon.';
-            formStatus.style.color = 'green';
-            contactForm.reset(); // Clear the form
-        } else {
-            throw new Error('Failed to send');
-        }
-    } catch (error) {
-        formStatus.innerText = '❌ Error sending message. Please try again.';
-        formStatus.style.color = 'red';
-    }
-});
-// 3. Load News & Events
+// 2. Load News
 async function loadNews() {
-    const newsList = document.getElementById('news-list');
-    
-    if (!newsList) return; // Only run if we're on the homepage
-    
+    const list = document.getElementById('news-list');
+    if (!list) return;
     try {
         const response = await fetch('/news');
         const data = await response.json();
-        
-        newsList.innerHTML = '';
-
-        if (data.news.length === 0) {
-            newsList.innerHTML = '<p>No news or events yet.</p>';
-            return;
-        }
-
+        list.innerHTML = '';
+        if (data.news.length === 0) { list.innerHTML = '<p class="loading-text">No news or events yet.</p>'; return; }
         data.news.forEach(item => {
             const card = document.createElement('div');
             card.className = 'news-card';
-            card.innerHTML = `
-                <span class="type">${item.type || 'Announcement'}</span>
-                <h3>${item.title}</h3>
-                <span class="date">${new Date(item.date).toLocaleDateString()}</span>
-                <p>${item.description}</p>
-            `;
-            newsList.appendChild(card);
+            card.innerHTML = `<span class="type">${item.type || 'Announcement'}</span><h3>${item.title}</h3><span class="date">${new Date(item.date).toLocaleDateString()}</span><p>${item.description}</p>`;
+            list.appendChild(card);
         });
-
-    } catch (error) {
-        console.error('Error loading news:', error);
-        newsList.innerHTML = '<p>Error loading news.</p>';
-    }
+    } catch (error) { list.innerHTML = '<p>Error loading news.</p>'; }
 }
 
-// Add news loading to the page load event
-document.addEventListener('DOMContentLoaded', () => {
-    loadStaff();
-    loadNews();
-});
+// 3. Load Staff
+async function loadStaff() {
+    const list = document.getElementById('staff-list');
+    if (!list) return;
+    try {
+        const response = await fetch('/staff');
+        const data = await response.json();
+        list.innerHTML = '';
+        if (data.staff.length === 0) { list.innerHTML = '<p class="loading-text">No staff members added yet.</p>'; return; }
+        data.staff.forEach(member => {
+            const card = document.createElement('div');
+            card.className = 'staff-card';
+            let imgHtml = member.photoUrl ? `<img src="${member.photoUrl}" alt="${member.name}">` : '';
+            card.innerHTML = `${imgHtml}<h3>${member.name}</h3><span class="role">${member.role}</span><p>${member.bio}</p>`;
+            list.appendChild(card);
+        });
+    } catch (error) { list.innerHTML = '<p>Error loading staff.</p>'; }
+}
+
+// 4. Contact Form
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const status = document.getElementById('form-status');
+        try {
+            const response = await fetch('/contact', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: document.getElementById('name').value, email: document.getElementById('email').value, message: document.getElementById('message').value })
+            });
+            if (response.ok) {
+                status.innerText = '✅ Message sent successfully!'; status.style.color = 'green'; contactForm.reset();
+            } else { throw new Error('Failed'); }
+        } catch (error) { status.innerText = '❌ Error sending message.'; status.style.color = 'red'; }
+    });
+}
