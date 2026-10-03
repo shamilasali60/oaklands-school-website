@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oaklands Nursery and Primary School</title>
-    <!-- Google Fonts: Poppins for body, Playfair Display for the catchy logo text -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -14,7 +13,6 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container nav-container">
-            <!-- LOGO AND CATCHY TEXT -->
             <div class="logo">
                 <img src="/logo.png" alt="Oaklands School Logo" class="site-logo">
                 <div class="logo-text">
@@ -84,25 +82,60 @@
     <section id="contact" class="section-padding bg-dark">
         <div class="container">
             <h2 class="section-title text-white">Get in Touch</h2>
-            <p class="text-white text-center" style="margin-bottom: 30px;">We would love to hear from you. Send us a message below!</p>
             
-            <div class="contact-wrapper">
-                <form id="contact-form" class="contact-form">
-                    <div class="form-group">
-                        <label>Your Name</label>
-                        <input type="text" id="name" placeholder="John Doe" required>
+            <div class="contact-layout">
+                <!-- NEW: Contact Information Block -->
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <p style="margin-bottom: 20px; opacity: 0.9;">We are always happy to hear from parents and visitors. Reach out to us via phone or social media!</p>
+                    
+                    <div class="info-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <div>
+                            <strong>Call Us:</strong><br>
+                            <a href="tel:+256772489399">+256 772 489 399</a><br>
+                            <a href="tel:+256702819038">+256 702 819 038</a><br>
+                            <a href="tel:+256700100800">+256 700 100 800</a>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Your Email</label>
-                        <input type="email" id="email" placeholder="john@example.com" required>
+
+                    <div class="info-item" style="margin-top: 25px;">
+                        <i class="fab fa-tiktok"></i>
+                        <div>
+                            <strong>TikTok:</strong><br>
+                            <a href="https://www.tiktok.com/@oaklandsschoolsbuddo" target="_blank" rel="noopener noreferrer">@oaklandsschoolsbuddo</a>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Your Message</label>
-                        <textarea id="message" placeholder="How can we help you?" required></textarea>
+
+                    <div class="info-item" style="margin-top: 15px;">
+                        <i class="fab fa-youtube"></i>
+                        <div>
+                            <strong>YouTube:</strong><br>
+                            <a href="https://youtu.be/UiyJLzKIBn8" target="_blank" rel="noopener noreferrer">Watch our latest video</a>
+                        </div>
                     </div>
-                    <button type="submit" class="btn-primary full-width">Send Message</button>
-                    <p id="form-status" class="form-status"></p>
-                </form>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="contact-wrapper">
+                    <h3 style="color: var(--primary-color); margin-bottom: 20px;">Send us a Message</h3>
+                    <form id="contact-form" class="contact-form">
+                        <div class="form-group">
+                            <label>Your Name</label>
+                            <input type="text" id="name" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Your Email</label>
+                            <input type="email" id="email" placeholder="john@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Your Message</label>
+                            <textarea id="message" placeholder="How can we help you?" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary full-width">Send Message</button>
+                        <p id="form-status" class="form-status"></p>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
