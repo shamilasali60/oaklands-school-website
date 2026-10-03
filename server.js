@@ -60,17 +60,7 @@ app.post('/staff', async (req, res) => {
     res.status(500).json({ message: '❌ Error adding staff', error });
   }
 });
-// TEMPORARY ROUTE: Visit this URL once to add teachers to the database
-app.get('/add-sample-staff', async (req, res) => {
-  const sampleStaff = [
-    { name: "Mrs. Sarah Johnson", role: "Headteacher", bio: "Leading Oaklands since 2010" },
-    { name: "Mr. David Okello", role: "Math Teacher", bio: "Making math fun for 15 years" },
-    { name: "Ms. Grace Nakato", role: "Primary Teacher", bio: "Dedicated to early childhood education" }
-  ];
-  
-  await Staff.insertMany(sampleStaff);
-  res.send("✅ Sample staff added to database! Go back to the homepage.");
-});
+
 // Start the server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
