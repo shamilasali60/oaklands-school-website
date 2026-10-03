@@ -11,8 +11,8 @@
         .message-card { background: #ecf0f1; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
         .message-card strong { color: #2c3e50; }
         form { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        input, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        button { background: #2c3e50; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        input, textarea, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+        button { background: #2c3e50; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1rem; }
         button:hover { background: #f1c40f; color: #2c3e50; }
         .nav-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #2c3e50; font-weight: bold; }
     </style>
@@ -21,7 +21,7 @@
     <div class="container">
         <a href="/" class="nav-link">← Back to Main Website</a>
         
-        <h2>📬 Contact Messages</h2>
+        <h2> Contact Messages</h2>
         <div id="messages-list">Loading messages...</div>
 
         <h2 style="margin-top: 40px;">➕ Add New Staff Member</h2>
@@ -33,27 +33,44 @@
             <button type="submit">Add Staff Member</button>
         </form>
         <p id="staff-status" style="margin-top: 10px; font-weight: bold;"></p>
+
+        <h2 style="margin-top: 40px;">📰 Add News / Event</h2>
+        <form id="add-news-form">
+            <input type="text" id="newsTitle" placeholder="Title (e.g., Sports Day)" required>
+            <select id="newsType" required>
+                <option value="Event">Event</option>
+                <option value="Announcement">Announcement</option>
+                <option value="Sports">Sports</option>
+            </select>
+            <textarea id="newsDesc" placeholder="Description of the event..." required></textarea>
+            <button type="submit">Post News</button>
+        </form>
+        <p id="news-status" style="margin-top: 10px; font-weight: bold;"></p>
     </div>
 
     <script>
         // 1. Load Contact Messages
         async function loadMessages() {
-            const response = await fetch('/contact');
-            const data = await response.json();
             const list = document.getElementById('messages-list');
-            
-            if (data.messages.length === 0) {
-                list.innerHTML = '<p>No messages yet.</p>';
-                return;
-            }
+            try {
+                const response = await fetch('/contact');
+                const data = await response.json();
+                
+                if (data.messages.length === 0) {
+                    list.innerHTML = '<p>No messages yet.</p>';
+                    return;
+                }
 
-            list.innerHTML = data.messages.map(msg => `
-                <div class="message-card">
-                    <strong>${msg.name}</strong> (${msg.email})<br>
-                    <small>${new Date(msg.date).toLocaleDateString()}</small><br>
-                    <p>${msg.message}</p>
-                </div>
-            `).join('');
+                list.innerHTML = data.messages.map(msg => `
+                    <div class="message-card">
+                        <strong>${msg.name}</strong> (${msg.email})<br>
+                        <small>${new Date(msg.date).toLocaleDateString()}</small><br>
+                        <p>${msg.message}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                list.innerHTML = '<p>Error loading messages. The server might be waking up. Please refresh in 30 seconds.</p>';
+            }
         }
 
         // 2. Handle Add Staff Form
@@ -85,32 +102,36 @@
             }
         });
 
-        // Load messages on page load
+        // 3. Handle Add News Form
+        document.getElementById('add-news-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const status = document.getElementById('news-status');
+            status.innerText = 'Posting...';
+            
+            const newNews = {
+                title: document.getElementById('newsTitle').value,
+                type: document.getElementById('newsType').value,
+                description: document.getElementById('newsDesc').value
+            };
+
+            const response = await fetch('/news', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newNews)
+            });
+
+            if (response.ok) {
+                status.innerText = '✅ News posted successfully!';
+                status.style.color = 'green';
+                document.getElementById('add-news-form').reset();
+            } else {
+                status.innerText = '❌ Error posting news.';
+                status.style.color = 'red';
+            }
+        });
+
+        // Load messages when page opens
         loadMessages();
-                <h2 style="margin-top: 40px;">📰 Add News / Event</h2>
-        <form id="add-news-form">
-            <input type="text" id="newsTitle" placeholder="Title (e.g., Sports Day)" required>
-            <select id="newsType" required style="padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                <option value="Event">Event</option>
-                <option value="Announcement">Announcement</option>
-                <option value="Sports">Sports</option>
-            </select>
-            <textarea id="newsDesc" placeholder="Description of the event..." required></textarea>
-            <button type="submit">Post News</button>
-        </form>
-        <p id="news-status" style="margin-top: 10px; font-weight: bold;"></p>
-                <h2 style="margin-top: 40px;">📰 Add News / Event</h2>
-        <form id="add-news-form">
-            <input type="text" id="newsTitle" placeholder="Title (e.g., Sports Day)" required>
-            <select id="newsType" required style="padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                <option value="Event">Event</option>
-                <option value="Announcement">Announcement</option>
-                <option value="Sports">Sports</option>
-            </select>
-            <textarea id="newsDesc" placeholder="Description of the event..." required></textarea>
-            <button type="submit">Post News</button>
-        </form>
-        <p id="news-status" style="margin-top: 10px; font-weight: bold;"></p>
     </script>
 </body>
 </html>
