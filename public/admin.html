@@ -25,7 +25,7 @@
         <h2>📬 Contact Messages</h2>
         <div id="messages-list">Loading...</div>
 
-        <h2> Manage "Why Choose Oaklands" Features</h2>
+        <h2>🌟 Manage "Why Choose Oaklands" Features</h2>
         <div id="manage-features-list">Loading...</div>
         <h3 id="feature-form-title" style="margin-top:20px;">➕ Add New Feature</h3>
         <form id="add-feature-form">
@@ -56,7 +56,7 @@
         </form>
         <p id="staff-status" style="margin-top: 10px; font-weight: bold;"></p>
 
-        <h2>📰 Manage News</h2>
+        <h2> Manage News</h2>
         <form id="add-news-form">
             <input type="text" id="newsTitle" placeholder="Title" required>
             <select id="newsType" required><option value="Event">Event</option><option value="Announcement">Announcement</option></select>
@@ -67,30 +67,38 @@
     </div>
 
     <script>
+        // --- GLOBAL VARIABLES TO STORE DATA SAFELY ---
+        let allFeaturesData = [];
+        let allStaffData = [];
+
         // --- FEATURES LOGIC ---
         let currentFeatureId = null;
         async function loadManageFeatures() {
             const list = document.getElementById('manage-features-list');
             try {
                 const res = await fetch('/features'); const data = await res.json();
-                if (data.features.length === 0) { list.innerHTML = '<p>No features yet.</p>'; return; }
-                list.innerHTML = data.features.map(f => `
+                allFeaturesData = data.features; // Save data globally
+                if (allFeaturesData.length === 0) { list.innerHTML = '<p>No features yet.</p>'; return; }
+                list.innerHTML = allFeaturesData.map(f => `
                     <div class="manage-card">
                         <div><i class="fas ${f.icon}"></i> <strong>${f.title}</strong></div>
                         <div>
-                            <button class="btn-edit" onclick="editFeature('${f._id}', '${f.title}', '${f.icon}', '${f.description}')">Edit</button>
+                            <button class="btn-edit" onclick="editFeatureById('${f._id}')">Edit</button>
                             <button class="btn-delete" onclick="deleteFeature('${f._id}')">Delete</button>
                         </div>
                     </div>`).join('');
             } catch (e) { list.innerHTML = '<p>Error.</p>'; }
         }
-        function editFeature(id, title, icon, desc) {
+        function editFeatureById(id) {
+            const f = allFeaturesData.find(feat => feat._id === id);
+            if (!f) return;
             currentFeatureId = id;
-            document.getElementById('featureTitle').value = title;
-            document.getElementById('featureIcon').value = icon;
-            document.getElementById('featureDesc').value = desc;
+            document.getElementById('featureTitle').value = f.title;
+            document.getElementById('featureIcon').value = f.icon;
+            document.getElementById('featureDesc').value = f.description;
             document.getElementById('feature-form-title').innerText = '✏️ Edit Feature';
             document.getElementById('feature-btn').innerText = 'Update Feature';
+            document.getElementById('add-feature-form').scrollIntoView({behavior: 'smooth'});
         }
         async function deleteFeature(id) {
             if(confirm('Delete this feature?')) { await fetch(`/features/${id}`, { method: 'DELETE' }); loadManageFeatures(); }
@@ -106,7 +114,7 @@
                 status.innerText = '✅ Saved!'; status.style.color = 'green';
                 document.getElementById('add-feature-form').reset();
                 currentFeatureId = null;
-                document.getElementById('feature-form-title').innerText = '➕ Add New Feature';
+                document.getElementById('feature-form-title').innerText = ' Add New Feature';
                 document.getElementById('feature-btn').innerText = 'Add Feature';
                 loadManageFeatures();
             } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
@@ -118,23 +126,29 @@
             const list = document.getElementById('manage-staff-list');
             try {
                 const res = await fetch('/staff'); const data = await res.json();
-                if (data.staff.length === 0) { list.innerHTML = '<p>No staff yet.</p>'; return; }
-                list.innerHTML = data.staff.map(s => `
+                allStaffData = data.staff; // Save data globally
+                if (allStaffData.length === 0) { list.innerHTML = '<p>No staff yet.</p>'; return; }
+                list.innerHTML = allStaffData.map(s => `
                     <div class="manage-card">
                         <div><strong>${s.name}</strong> - ${s.role}</div>
                         <div>
-                            <button class="btn-edit" onclick="editStaff('${s._id}', '${s.name}', '${s.role}', '${s.photoUrl||''}', '${s.bio}')">Edit</button>
+                            <button class="btn-edit" onclick="editStaffById('${s._id}')">Edit</button>
                             <button class="btn-delete" onclick="deleteStaff('${s._id}')">Delete</button>
                         </div>
                     </div>`).join('');
             } catch (e) { list.innerHTML = '<p>Error.</p>'; }
         }
-        function editStaff(id, name, role, photo, bio) {
+        function editStaffById(id) {
+            const s = allStaffData.find(staff => staff._id === id);
+            if (!s) return;
             currentStaffId = id;
-            document.getElementById('staffName').value = name; document.getElementById('staffRole').value = role;
-            document.getElementById('staffPhoto').value = photo; document.getElementById('staffBio').value = bio;
+            document.getElementById('staffName').value = s.name;
+            document.getElementById('staffRole').value = s.role;
+            document.getElementById('staffPhoto').value = s.photoUrl || '';
+            document.getElementById('staffBio').value = s.bio;
             document.getElementById('staff-form-title').innerText = '✏️ Edit Staff';
             document.getElementById('staff-btn').innerText = 'Update Staff';
+            document.getElementById('add-staff-form').scrollIntoView({behavior: 'smooth'});
         }
         async function deleteStaff(id) {
             if(confirm('Delete this staff?')) { await fetch(`/staff/${id}`, { method: 'DELETE' }); loadManageStaff(); }
@@ -150,7 +164,7 @@
                 status.innerText = '✅ Saved!'; status.style.color = 'green';
                 document.getElementById('add-staff-form').reset();
                 currentStaffId = null;
-                document.getElementById('staff-form-title').innerText = ' Add New Staff';
+                document.getElementById('staff-form-title').innerText = '➕ Add New Staff';
                 document.getElementById('staff-btn').innerText = 'Add Staff';
                 loadManageStaff();
             } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
