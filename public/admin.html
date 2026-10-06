@@ -25,16 +25,16 @@
         <h2>📬 Contact Messages</h2>
         <div id="messages-list">Loading...</div>
 
-        <h2> Manage "Why Choose Oaklands" Features</h2>
+        <h2>🌟 Manage "Why Choose Oaklands" Features</h2>
         <div id="manage-features-list">Loading...</div>
         <h3 id="feature-form-title" style="margin-top:20px;">➕ Add New Feature</h3>
         <form id="add-feature-form">
             <input type="text" id="featureTitle" placeholder="Title (e.g., Academic Excellence)" required>
             <select id="featureIcon" required>
-                <option value="fa-book-open">📖 Book (Academic)</option>
+                <option value="fa-book-open"> Book (Academic)</option>
                 <option value="fa-users">👥 Users (Community)</option>
                 <option value="fa-palette">🎨 Palette (Arts)</option>
-                <option value="fa-graduation-cap">🎓 Cap (Graduation)</option>
+                <option value="fa-graduation-cap"> Cap (Graduation)</option>
                 <option value="fa-heart">❤️ Heart (Care)</option>
                 <option value="fa-globe">🌍 Globe (Global)</option>
                 <option value="fa-star">⭐ Star (General)</option>
@@ -56,12 +56,14 @@
         </form>
         <p id="staff-status" style="margin-top: 10px; font-weight: bold;"></p>
 
-        <h2>📰 Manage News</h2>
+        <h2> Manage News & Announcements</h2>
+        <div id="manage-news-list">Loading...</div>
+        <h3 id="news-form-title" style="margin-top:20px;"> Post New News</h3>
         <form id="add-news-form">
             <input type="text" id="newsTitle" placeholder="Title" required>
-            <select id="newsType" required><option value="Event">Event</option><option value="Announcement">Announcement</option></select>
+            <select id="newsType" required><option value="Event">Event</option><option value="Announcement">Announcement</option><option value="Sports">Sports</option></select>
             <textarea id="newsDesc" placeholder="Description" required></textarea>
-            <button type="submit" class="btn-primary">Post News</button>
+            <button type="submit" class="btn-primary" id="news-btn">Post News</button>
         </form>
         <p id="news-status" style="margin-top: 10px; font-weight: bold;"></p>
     </div>
@@ -71,6 +73,7 @@
         let allFeaturesData = [];
         let allStaffData = [];
         let allMessagesData = [];
+        let allNewsData = [];
 
         // --- MESSAGES LOGIC ---
         async function loadMessages() {
@@ -118,7 +121,7 @@
             document.getElementById('featureTitle').value = f.title;
             document.getElementById('featureIcon').value = f.icon;
             document.getElementById('featureDesc').value = f.description;
-            document.getElementById('feature-form-title').innerText = '️ Edit Feature';
+            document.getElementById('feature-form-title').innerText = '✏️ Edit Feature';
             document.getElementById('feature-btn').innerText = 'Update Feature';
             document.getElementById('add-feature-form').scrollIntoView({behavior: 'smooth'});
         }
@@ -168,7 +171,7 @@
             document.getElementById('staffRole').value = s.role;
             document.getElementById('staffPhoto').value = s.photoUrl || '';
             document.getElementById('staffBio').value = s.bio;
-            document.getElementById('staff-form-title').innerText = '✏️ Edit Staff';
+            document.getElementById('staff-form-title').innerText = '️ Edit Staff';
             document.getElementById('staff-btn').innerText = 'Update Staff';
             document.getElementById('add-staff-form').scrollIntoView({behavior: 'smooth'});
         }
@@ -193,17 +196,62 @@
         });
 
         // --- NEWS LOGIC ---
+        let currentNewsId = null;
+        async function loadManageNews() {
+            const list = document.getElementById('manage-news-list');
+            try {
+                const res = await fetch('/news'); const data = await res.json();
+                allNewsData = data.news;
+                if (allNewsData.length === 0) { list.innerHTML = '<p>No news yet.</p>'; return; }
+                list.innerHTML = allNewsData.map(n => `
+                    <div class="manage-card">
+                        <div>
+                            <span style="background:#15803d; color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem; margin-right:5px;">${n.type}</span>
+                            <strong>${n.title}</strong> <small style="color:#666;">(${new Date(n.date).toLocaleDateString()})</small>
+                        </div>
+                        <div>
+                            <button class="btn-edit" onclick="editNewsById('${n._id}')">Edit</button>
+                            <button class="btn-delete" onclick="deleteNews('${n._id}')">Delete</button>
+                        </div>
+                    </div>`).join('');
+            } catch (e) { list.innerHTML = '<p>Error.</p>'; }
+        }
+        function editNewsById(id) {
+            const n = allNewsData.find(news => news._id === id);
+            if (!n) return;
+            currentNewsId = id;
+            document.getElementById('newsTitle').value = n.title;
+            document.getElementById('newsType').value = n.type;
+            document.getElementById('newsDesc').value = n.description;
+            document.getElementById('news-form-title').innerText = '✏️ Edit News/Announcement';
+            document.getElementById('news-btn').innerText = 'Update News';
+            document.getElementById('add-news-form').scrollIntoView({behavior: 'smooth'});
+        }
+        async function deleteNews(id) {
+            if(confirm('Delete this news post?')) { 
+                await fetch(`/news/${id}`, { method: 'DELETE' }); 
+                loadManageNews(); 
+            }
+        }
         document.getElementById('add-news-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('news-status');
             const data = { title: document.getElementById('newsTitle').value, type: document.getElementById('newsType').value, description: document.getElementById('newsDesc').value };
-            const res = await fetch('/news', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-            if (res.ok) { status.innerText = '✅ Posted!'; status.style.color = 'green'; document.getElementById('add-news-form').reset(); } 
-            else { status.innerText = '❌ Error'; status.style.color = 'red'; }
+            const url = currentNewsId ? `/news/${currentNewsId}` : '/news';
+            const method = currentNewsId ? 'PUT' : 'POST';
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (res.ok) {
+                status.innerText = '✅ Saved!'; status.style.color = 'green';
+                document.getElementById('add-news-form').reset();
+                currentNewsId = null;
+                document.getElementById('news-form-title').innerText = '➕ Post New News';
+                document.getElementById('news-btn').innerText = 'Post News';
+                loadManageNews();
+            } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
         });
 
         // Init
-        loadMessages(); loadManageFeatures(); loadManageStaff();
+        loadMessages(); loadManageFeatures(); loadManageStaff(); loadManageNews();
     </script>
 </body>
 </html>
