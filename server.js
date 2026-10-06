@@ -7,7 +7,10 @@ const { Contact, Staff, News, Feature } = require('./models');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+
+// UPDATED: Increased limit to 10mb so we can save photos from the computer!
+app.use(express.json({ limit: '10mb' })); 
+
 app.use(express.static(__dirname));
 
 mongoose.connect(process.env.MONGODB_URI)
@@ -53,13 +56,13 @@ app.get('/news', async (req, res) => {
   try { res.json({ news: await News.find().sort({ date: -1 }) }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
 app.post('/news', async (req, res) => {
-  try { const n = new News(req.body); await n.save(); res.status(201).json({ message: '✅ Added!', data: n }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
+  try { const n = new News(req.body); await n.save(); res.status(201).json({ message: '✅ Added!', data: n }); } catch (error) { res.status(500).json({ message: ' Error', error }); }
 });
 app.put('/news/:id', async (req, res) => {
   try { const n = await News.findByIdAndUpdate(req.params.id, req.body, { new: true }); res.json({ message: '✅ Updated!', data: n }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
 app.delete('/news/:id', async (req, res) => {
-  try { await News.findByIdAndDelete(req.params.id); res.json({ message: '✅ Deleted!' }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
+  try { await News.findByIdAndDelete(req.params.id); res.json({ message: '✅ Deleted!' }); } catch (error) { res.status(500).json({ message: ' Error', error }); }
 });
 
 // Feature Routes
