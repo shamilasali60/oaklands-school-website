@@ -8,15 +8,19 @@ const staffSchema = new mongoose.Schema({
   name: String, role: String, photoUrl: String, bio: String
 });
 
+// UPDATED: Added eventUrl to the news schema
 const newsSchema = new mongoose.Schema({
-  title: String, date: { type: Date, default: Date.now }, description: String, type: String
+  title: String, 
+  date: { type: Date, default: Date.now }, 
+  description: String, 
+  type: String,
+  eventUrl: String // Optional link for the event
 });
 
-// NEW: Model for "Why Choose Oaklands" Features
 const featureSchema = new mongoose.Schema({
   title: String,
   description: String,
-  icon: { type: String, default: 'fa-star' } // Stores the FontAwesome icon name
+  icon: { type: String, default: 'fa-star' }
 });
 
 const Contact = mongoose.model('Contact', contactSchema);
