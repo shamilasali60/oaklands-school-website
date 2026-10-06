@@ -1,1 +1,59 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Oaklands School</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f3f4f6; margin: 0; }
+        .login-box { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 320px; }
+        .login-box h2 { color: #15803d; margin-bottom: 20px; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem; box-sizing: border-box; }
+        .login-box button { width: 100%; padding: 12px; background: #15803d; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1rem; margin-top: 10px; }
+        .login-box button:hover { background: #22c55e; }
+        .error { color: #ef4444; font-size: 0.9rem; margin-top: 15px; display: none; }
+        .back-link { display: block; margin-top: 20px; color: #6b7280; text-decoration: none; font-size: 0.9rem; }
+        .back-link:hover { color: #15803d; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>🔒 Admin Login</h2>
+        <input type="password" id="password" placeholder="Enter Admin Password">
+        <button onclick="login()">Access Dashboard</button>
+        <p class="error" id="error-msg">Incorrect password. Please try again.</p>
+        <a href="/" class="back-link">← Back to Main Website</a>
+    </div>
+
+    <script>
+        function login() {
+            const pwd = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+            
+            // Test the password against the server
+            fetch('/admin', {
+                headers: { 'Authorization': 'Bearer ' + pwd }
+            }).then(res => {
+                if (res.ok) {
+                    // Save token in browser session and go to dashboard
+                    sessionStorage.setItem('adminToken', pwd);
+                    window.location.href = '/admin';
+                } else {
+                    errorMsg.style.display = 'block';
+                    document.getElementById('password').value = '';
+                }
+            }).catch(() => {
+                errorMsg.innerText = "Connection error. Please try again.";
+                errorMsg.style.display = 'block';
+            });
+        }
+
+        // Allow pressing "Enter" to submit
+        document.getElementById('password').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+</html>
