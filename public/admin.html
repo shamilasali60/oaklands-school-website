@@ -16,6 +16,7 @@
         .btn-edit { background: #3b82f6; color: white; margin-right: 5px; }
         .btn-delete { background: #ef4444; color: white; }
         .nav-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #15803d; font-weight: bold; }
+        .img-preview { max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover; margin-top: 10px; display: none; border: 2px solid #15803d; }
     </style>
 </head>
 <body>
@@ -50,13 +51,18 @@
         <form id="add-staff-form">
             <input type="text" id="staffName" placeholder="Full Name" required>
             <input type="text" id="staffRole" placeholder="Role" required>
-            <input type="url" id="staffPhoto" placeholder="Photo URL (optional)">
+            
+            <!-- NEW: File Upload for Photo -->
+            <label style="font-weight: bold; margin-top: 5px;">Upload Photo from Computer:</label>
+            <input type="file" id="staffPhotoFile" accept="image/*" onchange="previewImage(this)">
+            <img id="photoPreview" class="img-preview" src="" alt="Preview">
+            
             <textarea id="staffBio" placeholder="Biography" required></textarea>
             <button type="submit" class="btn-primary" id="staff-btn">Add Staff</button>
         </form>
         <p id="staff-status" style="margin-top: 10px; font-weight: bold;"></p>
 
-        <h2> Manage News & Announcements</h2>
+        <h2>📰 Manage News & Announcements</h2>
         <div id="manage-news-list">Loading...</div>
         <h3 id="news-form-title" style="margin-top:20px;">➕ Post New News</h3>
         <form id="add-news-form">
@@ -71,6 +77,21 @@
 
     <script>
         let allFeaturesData = [], allStaffData = [], allMessagesData = [], allNewsData = [];
+        let currentPhotoBase64 = ''; // Stores the image data
+
+        // --- NEW: Image Preview Function ---
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentPhotoBase64 = e.target.result; // Save the long text string
+                    const preview = document.getElementById('photoPreview');
+                    preview.src = currentPhotoBase64;
+                    preview.style.display = 'block'; // Show the preview
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
         // --- MESSAGES LOGIC ---
         async function loadMessages() {
@@ -128,19 +149,41 @@
         function editStaffById(id) {
             const s = allStaffData.find(staff => staff._id === id); if (!s) return;
             currentStaffId = id;
-            document.getElementById('staffName').value = s.name; document.getElementById('staffRole').value = s.role; document.getElementById('staffPhoto').value = s.photoUrl || ''; document.getElementById('staffBio').value = s.bio;
-            document.getElementById('staff-form-title').innerText = '️ Edit Staff'; document.getElementById('staff-btn').innerText = 'Update Staff';
+            document.getElementById('staffName').value = s.name; document.getElementById('staffRole').value = s.role; document.getElementById('staffBio').value = s.bio;
+            
+            // Handle existing photo
+            currentPhotoBase64 = s.photoUrl || '';
+            const preview = document.getElementById('photoPreview');
+            if (currentPhotoBase64) {
+                preview.src = currentPhotoBase64;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+
+            document.getElementById('staff-form-title').innerText = '✏️ Edit Staff'; document.getElementById('staff-btn').innerText = 'Update Staff';
         }
         async function deleteStaff(id) { if(confirm('Delete this staff?')) { await fetch(`/staff/${id}`, { method: 'DELETE' }); loadManageStaff(); } }
+        
         document.getElementById('add-staff-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('staff-status');
-            const data = { name: document.getElementById('staffName').value, role: document.getElementById('staffRole').value, photoUrl: document.getElementById('staffPhoto').value, bio: document.getElementById('staffBio').value };
+            const data = { 
+                name: document.getElementById('staffName').value, 
+                role: document.getElementById('staffRole').value, 
+                photoUrl: currentPhotoBase64, // Send the image data!
+                bio: document.getElementById('staffBio').value 
+            };
             const url = currentStaffId ? `/staff/${currentStaffId}` : '/staff';
             const res = await fetch(url, { method: currentStaffId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             if (res.ok) {
-                status.innerText = '✅ Saved!'; status.style.color = 'green'; document.getElementById('add-staff-form').reset(); currentStaffId = null;
-                document.getElementById('staff-form-title').innerText = '➕ Add New Staff'; document.getElementById('staff-btn').innerText = 'Add Staff'; loadManageStaff();
+                status.innerText = '✅ Saved!'; status.style.color = 'green'; 
+                document.getElementById('add-staff-form').reset(); 
+                document.getElementById('photoPreview').style.display = 'none'; // Hide preview
+                currentPhotoBase64 = ''; // Clear image data
+                currentStaffId = null;
+                document.getElementById('staff-form-title').innerText = '➕ Add New Staff'; document.getElementById('staff-btn').innerText = 'Add Staff'; 
+                loadManageStaff();
             } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
         });
 
