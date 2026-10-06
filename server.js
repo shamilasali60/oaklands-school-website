@@ -12,7 +12,7 @@ app.use(express.static(__dirname));
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error(' MongoDB connection error:', err));
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // ===== API ROUTES =====
 
@@ -29,10 +29,9 @@ app.get('/contact', async (req, res) => {
   try { res.json({ messages: await Contact.find().sort({ date: -1 }) }); } 
   catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
-// NEW: Delete Contact Route
 app.delete('/contact/:id', async (req, res) => {
   try { await Contact.findByIdAndDelete(req.params.id); res.json({ message: '✅ Message deleted!' }); } 
-  catch (error) { res.status(500).json({ message: '❌ Error', error }); }
+  catch (error) { res.status(500).json({ message: ' Error', error }); }
 });
 
 // Staff Routes
@@ -56,6 +55,14 @@ app.get('/news', async (req, res) => {
 app.post('/news', async (req, res) => {
   try { const n = new News(req.body); await n.save(); res.status(201).json({ message: '✅ Added!', data: n }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
+// NEW: Update News Route
+app.put('/news/:id', async (req, res) => {
+  try { const n = await News.findByIdAndUpdate(req.params.id, req.body, { new: true }); res.json({ message: '✅ Updated!', data: n }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
+});
+// NEW: Delete News Route
+app.delete('/news/:id', async (req, res) => {
+  try { await News.findByIdAndDelete(req.params.id); res.json({ message: '✅ Deleted!' }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
+});
 
 // Feature Routes
 app.get('/features', async (req, res) => {
@@ -68,7 +75,7 @@ app.put('/features/:id', async (req, res) => {
   try { const f = await Feature.findByIdAndUpdate(req.params.id, req.body, { new: true }); res.json({ message: '✅ Updated!', data: f }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
 });
 app.delete('/features/:id', async (req, res) => {
-  try { await Feature.findByIdAndDelete(req.params.id); res.json({ message: '✅ Deleted!' }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); }
+  try { await Feature.findByIdAndDelete(req.params.id); res.json({ message: '✅ Deleted!' }); } catch (error) { res.status(500).json({ message: ' Error', error }); }
 });
 
 const PORT = process.env.PORT || 3001;
