@@ -6,6 +6,8 @@
     <title>Contact Us - Oaklands Nursery and Primary School</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS for the Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
     <style>
         .page-header { background: var(--primary-color); color: white; text-align: center; padding: 60px 20px; margin-bottom: 40px; }
@@ -95,6 +97,16 @@
                     </form>
                 </div>
             </div>
+
+            <!-- NEW: Interactive Map Section -->
+            <div style="margin-top: 80px;">
+                <h2 class="section-title">Find Us Here</h2>
+                <p style="text-align: center; margin-bottom: 30px; color: var(--text-light); font-size: 1.1rem;">
+                    Nakasozi - Budo, off Masaka road (From King's College sign post)
+                </p>
+                <div id="map" style="height: 450px; width: 100%; border-radius: 10px; box-shadow: var(--shadow); z-index: 1;"></div>
+            </div>
+
         </div>
     </section>
 
@@ -103,6 +115,27 @@
             <p>&copy; 2026 Oaklands Nursery and Primary School. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- Leaflet JS for the Map -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Coordinates for Nakasozi, Budo (Near King's College Budo)
+        const schoolLat = 0.2165;
+        const schoolLng = 32.4665;
+
+        // Initialize the map
+        const map = L.map('map').setView([schoolLat, schoolLng], 15);
+
+        // Add the map tiles (OpenStreetMap - Free and no API key needed)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Add a marker for the school
+        L.marker([schoolLat, schoolLng]).addTo(map)
+            .bindPopup('<b style="color: #15803d; font-size: 1.1rem;">Oaklands Schools</b><br>Nakasozi - Budo<br>Off Masaka Road')
+            .openPopup();
+    </script>
 
     <script src="script.js"></script>
 </body>
