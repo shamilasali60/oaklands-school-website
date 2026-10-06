@@ -7,7 +7,6 @@
     <style>
         body { font-family: sans-serif; padding: 20px; background: #f4f7f6; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         h2 { color: #15803d; border-bottom: 2px solid #22c55e; padding-bottom: 10px; margin-top: 30px; }
         .manage-card { background: #f3f4f6; padding: 15px; margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
         form { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
@@ -16,16 +15,12 @@
         .btn-primary { background: #15803d; color: white; width: 100%; font-size: 1rem; }
         .btn-edit { background: #3b82f6; color: white; margin-right: 5px; }
         .btn-delete { background: #ef4444; color: white; }
-        .btn-logout { background: #6b7280; color: white; }
-        .nav-link { display: inline-block; text-decoration: none; color: #15803d; font-weight: bold; }
+        .nav-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #15803d; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <a href="/" class="nav-link">← Back to Main Website</a>
-            <button class="btn-logout" onclick="logout()">🔒 Logout</button>
-        </div>
+        <a href="/" class="nav-link">← Back to Main Website</a>
         
         <h2>📬 Contact Messages</h2>
         <div id="messages-list">Loading...</div>
@@ -61,7 +56,7 @@
         </form>
         <p id="staff-status" style="margin-top: 10px; font-weight: bold;"></p>
 
-        <h2>📰 Manage News & Announcements</h2>
+        <h2> Manage News & Announcements</h2>
         <div id="manage-news-list">Loading...</div>
         <h3 id="news-form-title" style="margin-top:20px;">➕ Post New News</h3>
         <form id="add-news-form">
@@ -71,53 +66,30 @@
             <input type="url" id="newsLink" placeholder="Event Link (optional, e.g., https://oaklands-mdd.onrender.com)">
             <button type="submit" class="btn-primary" id="news-btn">Post News</button>
         </form>
-        <p id="news-status" style="margin-top: 10px; font-weight: bold;"></p.>
+        <p id="news-status" style="margin-top: 10px; font-weight: bold;"></p>
     </div>
 
     <script>
-        // 1. SECURITY CHECK: If no token, kick back to login
-        const token = sessionStorage.getItem('adminToken');
-        if (!token) {
-            window.location.href = '/login';
-        }
-
-        // Helper function to always include the password token in requests
-        function getAuthHeaders() {
-            return {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + sessionStorage.getItem('adminToken')
-            };
-        }
-
-        function logout() {
-            sessionStorage.removeItem('adminToken');
-            window.location.href = '/login';
-        }
-
         let allFeaturesData = [], allStaffData = [], allMessagesData = [], allNewsData = [];
 
         // --- MESSAGES LOGIC ---
         async function loadMessages() {
             const list = document.getElementById('messages-list');
             try {
-                const res = await fetch('/contact', { headers: getAuthHeaders() }); 
-                if(res.status === 401) return logout();
-                const data = await res.json();
+                const res = await fetch('/contact'); const data = await res.json();
                 allMessagesData = data.messages;
                 if (allMessagesData.length === 0) { list.innerHTML = '<p>No messages.</p>'; return; }
                 list.innerHTML = allMessagesData.map(m => `<div class="manage-card"><div><strong>${m.name}</strong> (${m.email})<br><small>${new Date(m.date).toLocaleDateString()}</small><p>${m.message}</p></div><button class="btn-delete" onclick="deleteMessage('${m._id}')">Delete</button></div>`).join('');
             } catch (e) { list.innerHTML = '<p>Error.</p>'; }
         }
-        async function deleteMessage(id) { if(confirm('Delete this message?')) { await fetch(`/contact/${id}`, { method: 'DELETE', headers: getAuthHeaders() }); loadMessages(); } }
+        async function deleteMessage(id) { if(confirm('Delete this message?')) { await fetch(`/contact/${id}`, { method: 'DELETE' }); loadMessages(); } }
 
         // --- FEATURES LOGIC ---
         let currentFeatureId = null;
         async function loadManageFeatures() {
             const list = document.getElementById('manage-features-list');
             try {
-                const res = await fetch('/features', { headers: getAuthHeaders() });
-                if(res.status === 401) return logout();
-                const data = await res.json();
+                const res = await fetch('/features'); const data = await res.json();
                 allFeaturesData = data.features; 
                 if (allFeaturesData.length === 0) { list.innerHTML = '<p>No features yet.</p>'; return; }
                 list.innerHTML = allFeaturesData.map(f => `<div class="manage-card"><div><i class="fas ${f.icon}"></i> <strong>${f.title}</strong></div><div><button class="btn-edit" onclick="editFeatureById('${f._id}')">Edit</button><button class="btn-delete" onclick="deleteFeature('${f._id}')">Delete</button></div></div>`).join('');
@@ -129,13 +101,13 @@
             document.getElementById('featureTitle').value = f.title; document.getElementById('featureIcon').value = f.icon; document.getElementById('featureDesc').value = f.description;
             document.getElementById('feature-form-title').innerText = '✏️ Edit Feature'; document.getElementById('feature-btn').innerText = 'Update Feature';
         }
-        async function deleteFeature(id) { if(confirm('Delete this feature?')) { await fetch(`/features/${id}`, { method: 'DELETE', headers: getAuthHeaders() }); loadManageFeatures(); } }
+        async function deleteFeature(id) { if(confirm('Delete this feature?')) { await fetch(`/features/${id}`, { method: 'DELETE' }); loadManageFeatures(); } }
         document.getElementById('add-feature-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('feature-status');
             const data = { title: document.getElementById('featureTitle').value, icon: document.getElementById('featureIcon').value, description: document.getElementById('featureDesc').value };
             const url = currentFeatureId ? `/features/${currentFeatureId}` : '/features';
-            const res = await fetch(url, { method: currentFeatureId ? 'PUT' : 'POST', headers: getAuthHeaders(), body: JSON.stringify(data) });
+            const res = await fetch(url, { method: currentFeatureId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             if (res.ok) {
                 status.innerText = '✅ Saved!'; status.style.color = 'green'; document.getElementById('add-feature-form').reset(); currentFeatureId = null;
                 document.getElementById('feature-form-title').innerText = '➕ Add New Feature'; document.getElementById('feature-btn').innerText = 'Add Feature'; loadManageFeatures();
@@ -147,9 +119,7 @@
         async function loadManageStaff() {
             const list = document.getElementById('manage-staff-list');
             try {
-                const res = await fetch('/staff', { headers: getAuthHeaders() });
-                if(res.status === 401) return logout();
-                const data = await res.json();
+                const res = await fetch('/staff'); const data = await res.json();
                 allStaffData = data.staff; 
                 if (allStaffData.length === 0) { list.innerHTML = '<p>No staff yet.</p>'; return; }
                 list.innerHTML = allStaffData.map(s => `<div class="manage-card"><div><strong>${s.name}</strong> - ${s.role}</div><div><button class="btn-edit" onclick="editStaffById('${s._id}')">Edit</button><button class="btn-delete" onclick="deleteStaff('${s._id}')">Delete</button></div></div>`).join('');
@@ -159,15 +129,15 @@
             const s = allStaffData.find(staff => staff._id === id); if (!s) return;
             currentStaffId = id;
             document.getElementById('staffName').value = s.name; document.getElementById('staffRole').value = s.role; document.getElementById('staffPhoto').value = s.photoUrl || ''; document.getElementById('staffBio').value = s.bio;
-            document.getElementById('staff-form-title').innerText = '✏️ Edit Staff'; document.getElementById('staff-btn').innerText = 'Update Staff';
+            document.getElementById('staff-form-title').innerText = '️ Edit Staff'; document.getElementById('staff-btn').innerText = 'Update Staff';
         }
-        async function deleteStaff(id) { if(confirm('Delete this staff?')) { await fetch(`/staff/${id}`, { method: 'DELETE', headers: getAuthHeaders() }); loadManageStaff(); } }
+        async function deleteStaff(id) { if(confirm('Delete this staff?')) { await fetch(`/staff/${id}`, { method: 'DELETE' }); loadManageStaff(); } }
         document.getElementById('add-staff-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('staff-status');
             const data = { name: document.getElementById('staffName').value, role: document.getElementById('staffRole').value, photoUrl: document.getElementById('staffPhoto').value, bio: document.getElementById('staffBio').value };
             const url = currentStaffId ? `/staff/${currentStaffId}` : '/staff';
-            const res = await fetch(url, { method: currentStaffId ? 'PUT' : 'POST', headers: getAuthHeaders(), body: JSON.stringify(data) });
+            const res = await fetch(url, { method: currentStaffId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             if (res.ok) {
                 status.innerText = '✅ Saved!'; status.style.color = 'green'; document.getElementById('add-staff-form').reset(); currentStaffId = null;
                 document.getElementById('staff-form-title').innerText = '➕ Add New Staff'; document.getElementById('staff-btn').innerText = 'Add Staff'; loadManageStaff();
@@ -179,9 +149,7 @@
         async function loadManageNews() {
             const list = document.getElementById('manage-news-list');
             try {
-                const res = await fetch('/news', { headers: getAuthHeaders() });
-                if(res.status === 401) return logout();
-                const data = await res.json();
+                const res = await fetch('/news'); const data = await res.json();
                 allNewsData = data.news;
                 if (allNewsData.length === 0) { list.innerHTML = '<p>No news yet.</p>'; return; }
                 list.innerHTML = allNewsData.map(n => `<div class="manage-card"><div><span style="background:#15803d; color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem; margin-right:5px;">${n.type}</span><strong>${n.title}</strong> <small style="color:#666;">(${new Date(n.date).toLocaleDateString()})</small></div><div><button class="btn-edit" onclick="editNewsById('${n._id}')">Edit</button><button class="btn-delete" onclick="deleteNews('${n._id}')">Delete</button></div></div>`).join('');
@@ -194,13 +162,13 @@
             document.getElementById('newsLink').value = n.eventUrl || '';
             document.getElementById('news-form-title').innerText = '✏️ Edit News/Announcement'; document.getElementById('news-btn').innerText = 'Update News';
         }
-        async function deleteNews(id) { if(confirm('Delete this news post?')) { await fetch(`/news/${id}`, { method: 'DELETE', headers: getAuthHeaders() }); loadManageNews(); } }
+        async function deleteNews(id) { if(confirm('Delete this news post?')) { await fetch(`/news/${id}`, { method: 'DELETE' }); loadManageNews(); } }
         document.getElementById('add-news-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('news-status');
             const data = { title: document.getElementById('newsTitle').value, type: document.getElementById('newsType').value, description: document.getElementById('newsDesc').value, eventUrl: document.getElementById('newsLink').value };
             const url = currentNewsId ? `/news/${currentNewsId}` : '/news';
-            const res = await fetch(url, { method: currentNewsId ? 'PUT' : 'POST', headers: getAuthHeaders(), body: JSON.stringify(data) });
+            const res = await fetch(url, { method: currentNewsId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             if (res.ok) {
                 status.innerText = '✅ Saved!'; status.style.color = 'green'; document.getElementById('add-news-form').reset(); currentNewsId = null;
                 document.getElementById('news-form-title').innerText = '➕ Post New News'; document.getElementById('news-btn').innerText = 'Post News'; loadManageNews();
