@@ -52,9 +52,8 @@
             <input type="text" id="staffName" placeholder="Full Name" required>
             <input type="text" id="staffRole" placeholder="Role" required>
             
-            <!-- NEW: File Upload for Photo -->
             <label style="font-weight: bold; margin-top: 5px;">Upload Photo from Computer:</label>
-            <input type="file" id="staffPhotoFile" accept="image/*" onchange="previewImage(this)">
+            <input type="file" id="staffPhotoFile" accept="image/*" onchange="handleImageUpload(this)">
             <img id="photoPreview" class="img-preview" src="" alt="Preview">
             
             <textarea id="staffBio" placeholder="Biography" required></textarea>
@@ -69,7 +68,7 @@
             <input type="text" id="newsTitle" placeholder="Title" required>
             <select id="newsType" required><option value="Event">Event</option><option value="Announcement">Announcement</option><option value="Sports">Sports</option></select>
             <textarea id="newsDesc" placeholder="Description" required></textarea>
-            <input type="url" id="newsLink" placeholder="Event Link (optional, e.g., https://oaklands-mdd.onrender.com)">
+            <input type="url" id="newsLink" placeholder="Event Link (optional)">
             <button type="submit" class="btn-primary" id="news-btn">Post News</button>
         </form>
         <p id="news-status" style="margin-top: 10px; font-weight: bold;"></p>
@@ -77,17 +76,37 @@
 
     <script>
         let allFeaturesData = [], allStaffData = [], allMessagesData = [], allNewsData = [];
-        let currentPhotoBase64 = ''; // Stores the image data
+        let currentPhotoBase64 = ''; 
 
-        // --- NEW: Image Preview Function ---
-        function previewImage(input) {
+        // --- MAGIC IMAGE COMPRESSOR ---
+        function handleImageUpload(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentPhotoBase64 = e.target.result; // Save the long text string
-                    const preview = document.getElementById('photoPreview');
-                    preview.src = currentPhotoBase64;
-                    preview.style.display = 'block'; // Show the preview
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        // Create a canvas to shrink the image
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // Shrink to max 800px width/height
+                        if (width > 800) { height *= 800 / width; width = 800; }
+                        if (height > 800) { width *= 800 / height; height = 800; }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Compress to JPEG (0.7 quality) - makes it tiny!
+                        currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                        
+                        const preview = document.getElementById('photoPreview');
+                        preview.src = currentPhotoBase64;
+                        preview.style.display = 'block';
+                    }
+                    img.src = event.target.result;
                 }
                 reader.readAsDataURL(input.files[0]);
             }
@@ -132,7 +151,7 @@
             if (res.ok) {
                 status.innerText = '✅ Saved!'; status.style.color = 'green'; document.getElementById('add-feature-form').reset(); currentFeatureId = null;
                 document.getElementById('feature-form-title').innerText = '➕ Add New Feature'; document.getElementById('feature-btn').innerText = 'Add Feature'; loadManageFeatures();
-            } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
+            } else { status.innerText = ' Error'; status.style.color = 'red'; }
         });
 
         // --- STAFF LOGIC ---
@@ -151,7 +170,6 @@
             currentStaffId = id;
             document.getElementById('staffName').value = s.name; document.getElementById('staffRole').value = s.role; document.getElementById('staffBio').value = s.bio;
             
-            // Handle existing photo
             currentPhotoBase64 = s.photoUrl || '';
             const preview = document.getElementById('photoPreview');
             if (currentPhotoBase64) {
@@ -168,23 +186,33 @@
         document.getElementById('add-staff-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('staff-status');
+            status.innerText = 'Saving... Please wait.'; status.style.color = 'blue';
+            
             const data = { 
                 name: document.getElementById('staffName').value, 
                 role: document.getElementById('staffRole').value, 
-                photoUrl: currentPhotoBase64, // Send the image data!
+                photoUrl: currentPhotoBase64, 
                 bio: document.getElementById('staffBio').value 
             };
             const url = currentStaffId ? `/staff/${currentStaffId}` : '/staff';
-            const res = await fetch(url, { method: currentStaffId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-            if (res.ok) {
-                status.innerText = '✅ Saved!'; status.style.color = 'green'; 
-                document.getElementById('add-staff-form').reset(); 
-                document.getElementById('photoPreview').style.display = 'none'; // Hide preview
-                currentPhotoBase64 = ''; // Clear image data
-                currentStaffId = null;
-                document.getElementById('staff-form-title').innerText = '➕ Add New Staff'; document.getElementById('staff-btn').innerText = 'Add Staff'; 
-                loadManageStaff();
-            } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
+            
+            try {
+                const res = await fetch(url, { method: currentStaffId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if (res.ok) {
+                    status.innerText = '✅ Saved successfully!'; status.style.color = 'green'; 
+                    document.getElementById('add-staff-form').reset(); 
+                    document.getElementById('photoPreview').style.display = 'none'; 
+                    currentPhotoBase64 = ''; 
+                    currentStaffId = null;
+                    document.getElementById('staff-form-title').innerText = '➕ Add New Staff'; document.getElementById('staff-btn').innerText = 'Add Staff'; 
+                    loadManageStaff();
+                } else {
+                    status.innerText = ' Error saving. Check console (F12).'; status.style.color = 'red';
+                }
+            } catch (err) {
+                status.innerText = '❌ Network Error.'; status.style.color = 'red';
+                console.error(err);
+            }
         });
 
         // --- NEWS LOGIC ---
