@@ -24,6 +24,14 @@
         .fees-table th { background-color: var(--primary-color); color: white; font-weight: 600; }
         .fees-table tr:nth-child(even) { background-color: #f9fafb; }
         .fees-category { font-size: 1.4rem; color: var(--primary-color); margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid var(--secondary-color); padding-bottom: 5px; display: inline-block;}
+
+        /* New Styles for Certificates */
+        .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 40px; }
+        .cert-card { background: white; padding: 15px; border-radius: 8px; box-shadow: var(--shadow); text-align: center; transition: transform 0.3s; }
+        .cert-card:hover { transform: translateY(-5px); }
+        .cert-card img { width: 100%; height: 450px; object-fit: contain; border: 1px solid #e5e7eb; margin-bottom: 15px; background: #f9fafb; }
+        .cert-card h4 { color: var(--primary-color); margin-bottom: 5px; font-size: 1.1rem; }
+        .cert-card p { font-size: 0.9rem; color: var(--text-light); }
     </style>
 </head>
 <body>
@@ -50,7 +58,7 @@
     <header class="page-header">
         <div class="container">
             <h1>About Oaklands</h1>
-            <p>Our mission is to offer quality education & produce an all round Pupil, our vision is to mould a well balanced citizen equipped with life skills, positive attitude and values which are relevant to the society.</p>
+            <p>Discover our history, our vision, and what makes us special.</p>
         </div>
     </header>
 
@@ -65,13 +73,36 @@
                 </p>
             </div>
 
+            <!-- Curriculum Section -->
+            <div style="background: white; padding: 40px; border-radius: 10px; box-shadow: var(--shadow); text-align: center; max-width: 900px; margin: 0 auto 60px auto; border-left: 6px solid var(--primary-color); border-right: 6px solid var(--primary-color);">
+                <h2 style="color: var(--primary-color); margin-bottom: 15px; font-family: 'Playfair Display', serif; font-size: 2rem;">Our Academic Curriculum</h2>
+                <p style="font-size: 1.25rem; color: var(--text-dark); line-height: 1.6; font-weight: 500;">
+                    We offer a dual curriculum: both secular education up to Primary Seven and Islamic Theology up to Primary Seven.
+                </p>
+            </div>
+
+            <!-- NEW: Certifications Section -->
+            <h2 class="section-title">Our Certifications & Accreditation</h2>
+            <div class="cert-grid">
+                <div class="cert-card">
+                    <img src="/uneb-cert.jpg" alt="UNEB Certificate">
+                    <h4>UNEB Registered Centre</h4>
+                    <p>Officially granted Centre Number <strong>539319</strong> by the Uganda National Examinations Board for PLE candidates.</p>
+                </div>
+                <div class="cert-card">
+                    <img src="/quran-cert.jpg" alt="Qur'an Schools Certificate">
+                    <h4>Islamic Theology Registered</h4>
+                    <p>Registered with the Uganda Qur'an Schools Association (Centre No. <strong>0800</strong>) for IPLE centre.</p>
+                </div>
+            </div>
+
             <!-- School Profile / Quick Facts -->
             <h2 class="section-title">School Profile</h2>
             <div class="info-grid">
                 <div class="info-box">
                     <i class="fas fa-map-marker-alt"></i>
                     <h4>Location</h4>
-                    <p>Nakasozi - Budo, 300m off Masaka road HWY<br>(From King's College sign post)</p>
+                    <p>Nakasozi - Budo, off Masaka road<br>(From King's College sign post)</p>
                 </div>
                 <div class="info-box">
                     <i class="fas fa-id-card"></i>
@@ -104,14 +135,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>Day Scholar Tuition</td><td>650,000/=</td></tr>
-                        <tr><td>Boarding Tuition</td><td>1,100,000/=</td></tr>
+                        <tr><td>Day Scholar Tuition</td><td>250,000/=</td></tr>
+                        <tr><td>Boarding Tuition</td><td>310,000/=</td></tr>
                         <tr><td>Formal Uniform (Shirt, Short, Waist coat)</td><td>85,000/=</td></tr>
                         <tr><td>Sportswear</td><td>60,000/=</td></tr>
                         <tr><td>Sweater</td><td>35,000/=</td></tr>
                         <tr><td>Socks (1 pair)</td><td>10,000/=</td></tr>
                         <tr><td>Track Suit</td><td>45,000/=</td></tr>
-                        <tr><td>House T-shirt</td><td>15,000/=</td></tr>
+                        <tr><td>Track Suit + T-shirt</td><td>60,000/=</td></tr>
                         <tr><td>Casual Wear (2 pairs)</td><td>60,000/=</td></tr>
                     </tbody>
                 </table>
@@ -126,12 +157,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>Full Day Tuition</td><td>600,000/=</td></tr>
-                        <tr><td>Half Day Tuition</td><td>450,000/=</td></tr>
+                        <tr><td>Full Day Tuition</td><td>250,000/=</td></tr>
+                        <tr><td>Half Day Tuition</td><td>230,000/=</td></tr>
                         <tr><td>Formal Uniform (Shirt, Short, Waist coat)</td><td>85,000/=</td></tr>
                         <tr><td>Sportswear</td><td>50,000/=</td></tr>
                         <tr><td>Sweater</td><td>30,000/=</td></tr>
                         <tr><td>Socks (1 pair)</td><td>10,000/=</td></tr>
+                        <tr><td>Track Suit + T-shirt</td><td>55,000/=</td></tr>
                         <tr><td>Track Suit</td><td>40,000/=</td></tr>
                         <tr><td>House T-shirt</td><td>15,000/=</td></tr>
                     </tbody>
