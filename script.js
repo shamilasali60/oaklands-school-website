@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadStaff();
 });
 
-// 1. Load Features (Why Choose Oaklands)
+// 1. Load Features
 async function loadFeatures() {
     const list = document.getElementById('features-list');
     if (!list) return;
@@ -12,10 +12,7 @@ async function loadFeatures() {
         const response = await fetch('/features');
         const data = await response.json();
         list.innerHTML = '';
-        if (data.features.length === 0) {
-            list.innerHTML = '<p class="loading-text">No features added yet. Admin can add them in the dashboard.</p>';
-            return;
-        }
+        if (data.features.length === 0) { list.innerHTML = '<p class="loading-text">No features added yet.</p>'; return; }
         data.features.forEach(f => {
             const card = document.createElement('div');
             card.className = 'feature-card';
@@ -25,7 +22,7 @@ async function loadFeatures() {
     } catch (error) { list.innerHTML = '<p>Error loading features.</p>'; }
 }
 
-// 2. Load News
+// 2. Load News (UPDATED to show link button)
 async function loadNews() {
     const list = document.getElementById('news-list');
     if (!list) return;
@@ -34,10 +31,24 @@ async function loadNews() {
         const data = await response.json();
         list.innerHTML = '';
         if (data.news.length === 0) { list.innerHTML = '<p class="loading-text">No news or events yet.</p>'; return; }
+        
         data.news.forEach(item => {
             const card = document.createElement('div');
             card.className = 'news-card';
-            card.innerHTML = `<span class="type">${item.type || 'Announcement'}</span><h3>${item.title}</h3><span class="date">${new Date(item.date).toLocaleDateString()}</span><p>${item.description}</p>`;
+            
+            // Check if there is an event link, if so, create a button for it
+            let linkHtml = '';
+            if (item.eventUrl) {
+                linkHtml = `<a href="${item.eventUrl}" target="_blank" class="news-link-btn">View Event <i class="fas fa-external-link-alt"></i></a>`;
+            }
+
+            card.innerHTML = `
+                <span class="type">${item.type || 'Announcement'}</span>
+                <h3>${item.title}</h3>
+                <span class="date">${new Date(item.date).toLocaleDateString()}</span>
+                <p>${item.description}</p>
+                ${linkHtml}
+            `;
             list.appendChild(card);
         });
     } catch (error) { list.innerHTML = '<p>Error loading news.</p>'; }
