@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <nav class="navbar">
         <div class="container nav-container">
             <div class="logo">
@@ -19,8 +18,9 @@
                     <span class="logo-subtitle">Nursery & Primary School</span>
                 </div>
             </div>
-            <ul class="nav-links">
-                <li><a href="/" style="color: var(--primary-color); font-weight: bold;">Home</a></li>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Home</a></li>
                 <li><a href="/about.html">About</a></li>
                 <li><a href="#news">News</a></li>
                 <li><a href="/staff.html">Staff</a></li>
@@ -32,8 +32,8 @@
     <header id="home" class="hero">
         <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <h1>Welcome to Oaklands Schools</h1>
-            <p class="motto">"Set sail for tomorrow & Foundation for life"</p>
+            <h1>Welcome to Oaklands</h1>
+            <p class="motto">"Foundation for life & Set sail for tomorrow"</p>
             <p class="subtitle">Nurturing young minds in a safe, creative, and inspiring environment.</p>
             <a href="/contact.html" class="btn-primary">Enquire Now</a>
         </div>
@@ -42,20 +42,11 @@
     <section id="news" class="section-padding">
         <div class="container">
             <h2 class="section-title">Latest News & Events</h2>
-            <div id="news-list" class="news-grid">
-                <p class="loading-text">Loading latest updates...</p>
-            </div>
+            <div id="news-list" class="news-grid"><p class="loading-text">Loading latest updates...</p></div>
         </div>
     </section>
 
-    <!-- CONTACT SECTION REMOVED FROM HERE -->
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Oaklands Nursery and Primary School. All rights reserved.</p>
-        </div>
-    </footer>
-
+    <footer><div class="container"><p>&copy; 2026 Oaklands Nursery and Primary School. All rights reserved.</p></div></footer>
     <script src="script.js"></script>
 </body>
 </html>
