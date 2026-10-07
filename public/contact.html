@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - Oaklands Nursery and Primary School</title>
+    <title>Our Staff - Oaklands Nursery and Primary School</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Leaflet CSS for the Map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
     <style>
         .page-header { background: var(--primary-color); color: white; text-align: center; padding: 60px 20px; margin-bottom: 40px; }
@@ -16,127 +14,32 @@
     </style>
 </head>
 <body>
-
     <nav class="navbar">
         <div class="container nav-container">
             <div class="logo">
                 <img src="/logo.png" alt="Oaklands School Logo" class="site-logo">
-                <div class="logo-text">
-                    <span class="logo-title">Oaklands</span>
-                    <span class="logo-subtitle">Nursery & Primary School</span>
-                </div>
+                <div class="logo-text"><span class="logo-title">Oaklands</span><span class="logo-subtitle">Nursery & Primary School</span></div>
             </div>
-            <ul class="nav-links">
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <ul class="nav-links" id="navLinks">
                 <li><a href="/">Home</a></li>
                 <li><a href="/about.html">About</a></li>
                 <li><a href="/#news">News</a></li>
-                <li><a href="/staff.html">Staff</a></li>
-                <li><a href="/contact.html" style="color: var(--primary-color); font-weight: bold;">Contact Us</a></li>
+                <li><a href="/staff.html" style="color: var(--primary-color); font-weight: bold;">Staff</a></li>
+                <li><a href="/contact.html" class="btn-nav">Contact Us</a></li>
             </ul>
         </div>
     </nav>
 
-    <header class="page-header">
-        <div class="container">
-            <h1>Get in Touch</h1>
-            <p>We would love to hear from you. Reach out to us today!</p>
-        </div>
-    </header>
+    <header class="page-header"><div class="container"><h1>Meet Our Dedicated Staff</h1><p>The passionate educators and leaders guiding our students every day.</p></div></header>
 
     <section class="section-padding bg-light">
         <div class="container">
-            <div class="contact-layout">
-                <div class="contact-info" style="color: var(--text-dark);">
-                    <h3 style="color: var(--primary-color);">Contact Information</h3>
-                    <p style="margin-bottom: 20px;">We are always happy to hear from parents and visitors. Reach out to us via phone or social media!</p>
-                    
-                    <div class="info-item" style="margin-bottom: 20px;">
-                        <i class="fas fa-phone-alt" style="color: var(--primary-color);"></i>
-                        <div>
-                            <strong>Call Us:</strong><br>
-                            <a href="tel:+256772489399" style="color: var(--text-dark);">+256 772 489 399</a><br>
-                            <a href="tel:+256702819038" style="color: var(--text-dark);">+256 702 819 038</a><br>
-                            <a href="tel:+256700100800" style="color: var(--text-dark);">+256 700 100 800</a>
-                        </div>
-                    </div>
-
-                    <div class="info-item" style="margin-bottom: 20px;">
-                        <i class="fab fa-tiktok" style="color: var(--primary-color);"></i>
-                        <div>
-                            <strong>TikTok:</strong><br>
-                            <a href="https://www.tiktok.com/@oaklandsschoolsbuddo" target="_blank" rel="noopener noreferrer" style="color: var(--text-dark);">@oaklandsschoolsbuddo</a>
-                        </div>
-                    </div>
-
-                    <div class="info-item">
-                        <i class="fab fa-youtube" style="color: var(--primary-color);"></i>
-                        <div>
-                            <strong>YouTube:</strong><br>
-                            <a href="https://youtu.be/UiyJLzKIBn8" target="_blank" rel="noopener noreferrer" style="color: var(--text-dark);">Watch our latest video</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="contact-wrapper">
-                    <h3 style="color: var(--primary-color); margin-bottom: 20px;">Send us a Message</h3>
-                    <form id="contact-form" class="contact-form">
-                        <div class="form-group">
-                            <label>Your Name</label>
-                            <input type="text" id="name" placeholder="John Doe" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Your Email</label>
-                            <input type="email" id="email" placeholder="john@example.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Your Message</label>
-                            <textarea id="message" placeholder="How can we help you?" required></textarea>
-                        </div>
-                        <button type="submit" class="btn-primary full-width">Send Message</button>
-                        <p id="form-status" class="form-status"></p>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Interactive Map Section -->
-            <div style="margin-top: 80px;">
-                <h2 class="section-title">Find Us Here</h2>
-                <p style="text-align: center; margin-bottom: 30px; color: var(--text-light); font-size: 1.1rem;">
-                    Wakiso District, Kyengera Town Council, Nakasozi - Budo, 300m off Masaka road Highway (From King's College sign post)
-                </p>
-                <div id="map" style="height: 450px; width: 100%; border-radius: 10px; box-shadow: var(--shadow); z-index: 1;"></div>
-            </div>
-
+            <div id="staff-list" class="staff-grid"><p class="loading-text">Loading staff members...</p></div>
         </div>
     </section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Oaklands Nursery and Primary School. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <!-- Leaflet JS for the Map -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        // EXACT Coordinates for Oaklands Schools from Google Maps
-        const schoolLat = 0.281362;
-        const schoolLng = 32.490010;
-
-        // Initialize the map
-        const map = L.map('map').setView([schoolLat, schoolLng], 16);
-
-        // Add the map tiles (OpenStreetMap - Free and no API key needed)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        // Add a marker for the school
-        L.marker([schoolLat, schoolLng]).addTo(map)
-            .bindPopup('<b style="color: #15803d; font-size: 1.1rem;">Oaklands Schools</b><br>Nakasozi - Budo<br>300m Off Masaka Road')
-            .openPopup();
-    </script>
-
+    <footer><div class="container"><p>&copy; 2026 Oaklands Nursery and Primary School. All rights reserved.</p></div></footer>
     <script src="script.js"></script>
 </body>
 </html>
