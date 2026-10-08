@@ -4,12 +4,40 @@ function toggleMenu() {
     if (nav) nav.classList.toggle('active');
 }
 
+// Automatically close the mobile menu when any navigation link is clicked
 document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const nav = document.getElementById('navLinks');
+            if (nav && nav.classList.contains('active')) {
+                nav.classList.remove('active');
+            }
+        });
+    });
+
     loadFeatures();
     loadNews();
     loadStaff();
 });
 
+// --- NEW: Inject and Handle "Back to Top" Button ---
+document.body.insertAdjacentHTML('beforeend', '<button id="scrollTopBtn" title="Go to top">↑</button>');
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+window.onscroll = function() {
+  if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+    scrollTopBtn.style.display = "block";
+  } else {
+    scrollTopBtn.style.display = "none";
+  }
+};
+
+scrollTopBtn.addEventListener("click", function() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// --- Data Loading Functions ---
 async function loadFeatures() {
     const list = document.getElementById('features-list');
     if (!list) return;
@@ -76,6 +104,6 @@ if (contactForm) {
             if (response.ok) {
                 status.innerText = '✅ Message sent successfully!'; status.style.color = 'green'; contactForm.reset();
             } else { throw new Error('Failed'); }
-        } catch (error) { status.innerText = '❌ Error sending message.'; status.style.color = 'red'; }
+        } catch (error) { status.innerText = ' Error sending message.'; status.style.color = 'red'; }
     });
 }
