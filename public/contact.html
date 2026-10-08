@@ -56,8 +56,8 @@
                 <div class="contact-wrapper">
                     <h3 style="color: var(--primary-color); margin-bottom: 20px;">Send us a Message</h3>
                     <form id="contact-form" class="contact-form">
-                        <div class="form-group"><label>Your Name</label><input type="text" id="name" placeholder="John Doe" required></div>
-                        <div class="form-group"><label>Your Email</label><input type="email" id="email" placeholder="john@example.com" required></div>
+                        <div class="form-group"><label>Your Name</label><input type="text" id="name" placeholder="Ssali Ahmed" required></div>
+                        <div class="form-group"><label>Your Email</label><input type="email" id="email" placeholder="ssali@example.com" required></div>
                         <div class="form-group"><label>Your Message</label><textarea id="message" placeholder="How can we help you?" required></textarea></div>
                         <button type="submit" class="btn-primary full-width">Send Message</button>
                         <p id="form-status" class="form-status"></p>
@@ -66,7 +66,7 @@
             </div>
             <div style="margin-top: 80px;">
                 <h2 class="section-title">Find Us Here</h2>
-                <p style="text-align: center; margin-bottom: 30px; color: var(--text-light); font-size: 1.1rem;">Nakasozi - Budo, off Masaka road (From King's College sign post)</p>
+                <p style="text-align: center; margin-bottom: 30px; color: var(--text-light); font-size: 1.1rem;">Nakasozi - Buddo, 300m off Masaka road (From King's College sign post)</p>
                 <div id="map" style="height: 450px; width: 100%; border-radius: 10px; box-shadow: var(--shadow); z-index: 1;"></div>
             </div>
         </div>
@@ -78,7 +78,7 @@
         const schoolLat = 0.281362; const schoolLng = 32.490010;
         const map = L.map('map').setView([schoolLat, schoolLng], 16);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
-        L.marker([schoolLat, schoolLng]).addTo(map).bindPopup('<b style="color: #15803d; font-size: 1.1rem;">Oaklands Schools</b><br>Nakasozi - Budo<br>Off Masaka Road').openPopup();
+        L.marker([schoolLat, schoolLng]).addTo(map).bindPopup('<b style="color: #15803d; font-size: 1.1rem;">Oaklands Schools</b><br>Nakasozi - Buddo<br>300m Off Masaka Road').openPopup();
     </script>
     <script src="script.js"></script>
 </body>
