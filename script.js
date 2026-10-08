@@ -107,3 +107,19 @@ if (contactForm) {
         } catch (error) { status.innerText = ' Error sending message.'; status.style.color = 'red'; }
     });
 }
+// --- NEW: Certificate Modal Logic ---
+function openModal(imageSrc) {
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImg");
+    if (modal && modalImg) {
+        modal.style.display = "block";
+        modalImg.src = imageSrc;
+    }
+}
+
+function closeModal() {
+    const modal = document.getElementById("imageModal");
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
