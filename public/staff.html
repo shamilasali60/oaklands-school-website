@@ -11,6 +11,7 @@
         .page-header { background: var(--primary-color); color: white; text-align: center; padding: 60px 20px; margin-bottom: 40px; }
         .page-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
         .page-header p { font-size: 1.1rem; opacity: 0.9; }
+        .dept-divider { margin: 60px 0 30px 0; }
     </style>
 </head>
 <body>
@@ -20,10 +21,11 @@
                 <img src="/logo.png" alt="Oaklands School Logo" class="site-logo">
                 <div class="logo-text"><span class="logo-title">Oaklands</span><span class="logo-subtitle">Nursery & Primary School</span></div>
             </div>
-            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <button class="mobile-menu-btn" onclick="toggleMenu()"></button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="/">Home</a></li>
                 <li><a href="/about.html">About</a></li>
+                <li><a href="/gallery.html">Gallery</a></li>
                 <li><a href="/#news">News</a></li>
                 <li><a href="/staff.html" style="color: var(--primary-color); font-weight: bold;">Staff</a></li>
                 <li><a href="/contact.html" class="btn-nav">Contact Us</a></li>
@@ -31,11 +33,34 @@
         </div>
     </nav>
 
-    <header class="page-header"><div class="container"><h1>Meet Our Dedicated Staff</h1><p>The passionate educators and leaders guiding our students every day.</p></div></header>
+    <header class="page-header">
+        <div class="container">
+            <h1>Meet Our Dedicated Staff</h1>
+            <p>The passionate educators and leaders guiding our students every day.</p>
+        </div>
+    </header>
 
     <section class="section-padding bg-light">
         <div class="container">
-            <div id="staff-list" class="staff-grid"><p class="loading-text">Loading staff members...</p></div>
+            
+            <!-- Administration Section -->
+            <h2 class="section-title">Administration Staff</h2>
+            <div id="admin-list" class="staff-grid">
+                <p class="loading-text">Loading administration staff...</p>
+            </div>
+
+            <!-- Primary Section -->
+            <h2 class="section-title dept-divider">Primary Department Staff</h2>
+            <div id="primary-list" class="staff-grid">
+                <p class="loading-text">Loading primary staff...</p>
+            </div>
+
+            <!-- Nursery Section -->
+            <h2 class="section-title dept-divider">Nursery Department Staff</h2>
+            <div id="nursery-list" class="staff-grid">
+                <p class="loading-text">Loading nursery staff...</p>
+            </div>
+
         </div>
     </section>
 
