@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path'); 
-const { Contact, Staff, News, Feature } = require('./models'); 
+const { Contact, Staff, News, Feature, Gallery } = require('./models'); 
 
 const app = express();
 app.use(cors());
@@ -28,21 +28,23 @@ app.delete('/contact/:id', async (req, res) => { try { await Contact.findByIdAnd
 
 app.get('/staff', async (req, res) => { try { res.json({ staff: await Staff.find() }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
 app.post('/staff', async (req, res) => { try { const s = new Staff(req.body); await s.save(); res.status(201).json({ message: '✅ Added!', data: s }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
-// UPDATED: Fixed Mongoose warning
 app.put('/staff/:id', async (req, res) => { try { const s = await Staff.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' }); res.json({ message: '✅ Updated!', data: s }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
 app.delete('/staff/:id', async (req, res) => { try { await Staff.findByIdAndDelete(req.params.id); res.json({ message: '✅ Deleted!' }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
 
 app.get('/news', async (req, res) => { try { res.json({ news: await News.find().sort({ date: -1 }) }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
 app.post('/news', async (req, res) => { try { const n = new News(req.body); await n.save(); res.status(201).json({ message: '✅ Added!', data: n }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
-// UPDATED: Fixed Mongoose warning
 app.put('/news/:id', async (req, res) => { try { const n = await News.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' }); res.json({ message: '✅ Updated!', data: n }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
 app.delete('/news/:id', async (req, res) => { try { await News.findByIdAndDelete(req.params.id); res.json({ message: '✅ Deleted!' }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
 
 app.get('/features', async (req, res) => { try { res.json({ features: await Feature.find() }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
 app.post('/features', async (req, res) => { try { const f = new Feature(req.body); await f.save(); res.status(201).json({ message: '✅ Added!', data: f }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
-// UPDATED: Fixed Mongoose warning
 app.put('/features/:id', async (req, res) => { try { const f = await Feature.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' }); res.json({ message: '✅ Updated!', data: f }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
 app.delete('/features/:id', async (req, res) => { try { await Feature.findByIdAndDelete(req.params.id); res.json({ message: '✅ Deleted!' }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
+
+// NEW: Gallery Routes
+app.get('/gallery', async (req, res) => { try { res.json({ images: await Gallery.find().sort({ date: -1 }) }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
+app.post('/gallery', async (req, res) => { try { const g = new Gallery(req.body); await g.save(); res.status(201).json({ message: '✅ Added!', data: g }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
+app.delete('/gallery/:id', async (req, res) => { try { await Gallery.findByIdAndDelete(req.params.id); res.json({ message: '✅ Deleted!' }); } catch (error) { res.status(500).json({ message: '❌ Error', error }); } });
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => { console.log(`🚀 Server running on port ${PORT}`); });
