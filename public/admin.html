@@ -9,6 +9,8 @@
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         h2 { color: #15803d; border-bottom: 2px solid #22c55e; padding-bottom: 10px; margin-top: 30px; }
         .manage-card { background: #f3f4f6; padding: 15px; margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .manage-card img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; margin-right: 15px; }
+        .card-content { display: flex; align-items: center; flex-grow: 1; }
         form { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
         input, textarea, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
         button { padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; border: none; }
@@ -17,6 +19,7 @@
         .btn-delete { background: #ef4444; color: white; }
         .nav-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #15803d; font-weight: bold; }
         .img-preview { max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover; margin-top: 10px; display: none; border: 2px solid #15803d; }
+        .gallery-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 5px; margin-top: 10px; display: none; border: 1px solid #ccc;}
     </style>
 </head>
 <body>
@@ -26,15 +29,15 @@
         <h2>📬 Contact Messages</h2>
         <div id="messages-list">Loading...</div>
 
-        <h2>🌟 Manage "Why Choose Oaklands" Features</h2>
+        <h2> Manage "Why Choose Oaklands" Features</h2>
         <div id="manage-features-list">Loading...</div>
         <h3 id="feature-form-title" style="margin-top:20px;">➕ Add New Feature</h3>
         <form id="add-feature-form">
             <input type="text" id="featureTitle" placeholder="Title" required>
             <select id="featureIcon" required>
-                <option value="fa-book-open">📖 Book</option><option value="fa-users">👥 Users</option>
-                <option value="fa-palette">🎨 Palette</option><option value="fa-graduation-cap">🎓 Cap</option>
-                <option value="fa-heart">❤️ Heart</option><option value="fa-globe"> Globe</option><option value="fa-star">⭐ Star</option>
+                <option value="fa-book-open"> Book</option><option value="fa-users">👥 Users</option>
+                <option value="fa-palette">🎨 Palette</option><option value="fa-graduation-cap"> Cap</option>
+                <option value="fa-heart">❤️ Heart</option><option value="fa-globe">🌍 Globe</option><option value="fa-star">⭐ Star</option>
             </select>
             <textarea id="featureDesc" placeholder="Description" required></textarea>
             <button type="submit" class="btn-primary" id="feature-btn">Add Feature</button>
@@ -47,17 +50,14 @@
         <form id="add-staff-form">
             <input type="text" id="staffName" placeholder="Full Name" required>
             <input type="text" id="staffRole" placeholder="Role" required>
-            
             <select id="staffDept" required>
                 <option value="Administration">Administration</option>
                 <option value="Primary">Primary Department</option>
                 <option value="Nursery">Nursery Department</option>
             </select>
-
             <label style="font-weight: bold; margin-top: 5px;">Upload Photo:</label>
-            <input type="file" id="staffPhotoFile" accept="image/*" onchange="handleImageUpload(this)">
-            <img id="photoPreview" class="img-preview" src="" alt="Preview">
-            
+            <input type="file" id="staffPhotoFile" accept="image/*" onchange="handleImageUpload(this, 'staff')">
+            <img id="staffPhotoPreview" class="img-preview" src="" alt="Preview">
             <textarea id="staffBio" placeholder="Biography" required></textarea>
             <button type="submit" class="btn-primary" id="staff-btn">Add Staff</button>
         </form>
@@ -74,14 +74,28 @@
             <button type="submit" class="btn-primary" id="news-btn">Post News</button>
         </form>
         <p id="news-status" style="margin-top: 10px; font-weight: bold;"></p>
+
+        <!-- NEW: Gallery Management Section -->
+        <h2>🖼️ Manage Gallery</h2>
+        <div id="manage-gallery-list">Loading...</div>
+        <h3 id="gallery-form-title" style="margin-top:20px;"> Add New Photo to Gallery</h3>
+        <form id="add-gallery-form">
+            <label style="font-weight: bold;">Select Photo from Computer:</label>
+            <input type="file" id="galleryPhotoFile" accept="image/*" onchange="handleImageUpload(this, 'gallery')" required>
+            <img id="galleryPhotoPreview" class="gallery-preview" src="" alt="Preview">
+            <input type="text" id="galleryCaption" placeholder="Short Caption (e.g., Sports Day 2024)" required>
+            <button type="submit" class="btn-primary" id="gallery-btn">Upload to Gallery</button>
+        </form>
+        <p id="gallery-status" style="margin-top: 10px; font-weight: bold;"></p>
     </div>
 
     <script>
-        let allFeaturesData = [], allStaffData = [], allMessagesData = [], allNewsData = [];
-        let currentPhotoBase64 = ''; 
+        let allFeaturesData = [], allStaffData = [], allMessagesData = [], allNewsData = [], allGalleryData = [];
+        let currentStaffPhoto = ''; 
+        let currentGalleryPhoto = ''; 
 
-        // UPDATED: Aggressive compression for faster loading!
-        function handleImageUpload(input) {
+        // Universal Image Compressor
+        function handleImageUpload(input, type) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
@@ -89,15 +103,23 @@
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
                         let width = img.width, height = img.height;
-                        // Shrink to max 300px (perfect for profile circles)
-                        if (width > 300) { height *= 300 / width; width = 300; }
-                        if (height > 300) { width *= 300 / height; height = 300; }
+                        // Compress to max 800px for gallery, 300px for staff
+                        const maxSize = type === 'gallery' ? 800 : 300;
+                        if (width > maxSize) { height *= maxSize / width; width = maxSize; }
+                        if (height > maxSize) { width *= maxSize / height; height = maxSize; }
                         canvas.width = width; canvas.height = height;
                         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                        // Compress heavily to 0.6 quality
-                        currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.6);
-                        const preview = document.getElementById('photoPreview');
-                        preview.src = currentPhotoBase64; preview.style.display = 'block';
+                        const compressed = canvas.toDataURL('image/jpeg', 0.7);
+                        
+                        if (type === 'staff') {
+                            currentStaffPhoto = compressed;
+                            const preview = document.getElementById('staffPhotoPreview');
+                            preview.src = compressed; preview.style.display = 'block';
+                        } else {
+                            currentGalleryPhoto = compressed;
+                            const preview = document.getElementById('galleryPhotoPreview');
+                            preview.src = compressed; preview.style.display = 'block';
+                        }
                     }
                     img.src = event.target.result;
                 }
@@ -142,7 +164,7 @@
             const list = document.getElementById('manage-staff-list');
             try { const res = await fetch('/staff'); const data = await res.json(); allStaffData = data.staff; 
                 if (allStaffData.length === 0) { list.innerHTML = '<p>No staff yet.</p>'; return; }
-                list.innerHTML = allStaffData.map(s => `<div class="manage-card"><div><strong>${s.name}</strong> - ${s.role} <br><small style="color:#666;">(${s.department || 'Primary'})</small></div><div><button class="btn-edit" onclick="editStaffById('${s._id}')">Edit</button><button class="btn-delete" onclick="deleteStaff('${s._id}')">Delete</button></div></div>`).join('');
+                list.innerHTML = allStaffData.map(s => `<div class="manage-card"><div class="card-content">${s.photoUrl ? `<img src="${s.photoUrl}">` : ''}<div><strong>${s.name}</strong> - ${s.role} <br><small style="color:#666;">(${s.department || 'Primary'})</small></div></div><div><button class="btn-edit" onclick="editStaffById('${s._id}')">Edit</button><button class="btn-delete" onclick="deleteStaff('${s._id}')">Delete</button></div></div>`).join('');
             } catch (e) { list.innerHTML = '<p>Error.</p>'; }
         }
         function editStaffById(id) {
@@ -150,9 +172,9 @@
             document.getElementById('staffName').value = s.name; document.getElementById('staffRole').value = s.role; 
             document.getElementById('staffDept').value = s.department || 'Primary'; 
             document.getElementById('staffBio').value = s.bio;
-            currentPhotoBase64 = s.photoUrl || '';
-            const preview = document.getElementById('photoPreview');
-            if (currentPhotoBase64) { preview.src = currentPhotoBase64; preview.style.display = 'block'; } else { preview.style.display = 'none'; }
+            currentStaffPhoto = s.photoUrl || '';
+            const preview = document.getElementById('staffPhotoPreview');
+            if (currentStaffPhoto) { preview.src = currentStaffPhoto; preview.style.display = 'block'; } else { preview.style.display = 'none'; }
             document.getElementById('staff-form-title').innerText = '✏️ Edit Staff'; document.getElementById('staff-btn').innerText = 'Update Staff';
         }
         async function deleteStaff(id) { if(confirm('Delete?')) { await fetch(`/staff/${id}`, { method: 'DELETE' }); loadManageStaff(); } }
@@ -160,16 +182,16 @@
         document.getElementById('add-staff-form').addEventListener('submit', async (e) => {
             e.preventDefault(); const status = document.getElementById('staff-status'); status.innerText = 'Saving...'; status.style.color = 'blue';
             const data = { name: document.getElementById('staffName').value, role: document.getElementById('staffRole').value, 
-                           department: document.getElementById('staffDept').value, photoUrl: currentPhotoBase64, bio: document.getElementById('staffBio').value };
+                           department: document.getElementById('staffDept').value, photoUrl: currentStaffPhoto, bio: document.getElementById('staffBio').value };
             const url = currentStaffId ? `/staff/${currentStaffId}` : '/staff';
             try {
                 const res = await fetch(url, { method: currentStaffId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
                 if (res.ok) {
                     status.innerText = '✅ Saved!'; status.style.color = 'green'; document.getElementById('add-staff-form').reset(); 
-                    document.getElementById('photoPreview').style.display = 'none'; currentPhotoBase64 = ''; currentStaffId = null;
+                    document.getElementById('staffPhotoPreview').style.display = 'none'; currentStaffPhoto = ''; currentStaffId = null;
                     document.getElementById('staff-form-title').innerText = '➕ Add New Staff'; document.getElementById('staff-btn').innerText = 'Add Staff'; loadManageStaff();
-                } else { status.innerText = ' Error'; status.style.color = 'red'; }
-            } catch (err) { status.innerText = ' Network Error'; status.style.color = 'red'; }
+                } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
+            } catch (err) { status.innerText = '❌ Network Error'; status.style.color = 'red'; }
         });
 
         let currentNewsId = null;
@@ -183,7 +205,7 @@
         function editNewsById(id) { const n = allNewsData.find(news => news._id === id); if (!n) return; currentNewsId = id;
             document.getElementById('newsTitle').value = n.title; document.getElementById('newsType').value = n.type; document.getElementById('newsDesc').value = n.description;
             document.getElementById('newsLink').value = n.eventUrl || '';
-            document.getElementById('news-form-title').innerText = '️ Edit News'; document.getElementById('news-btn').innerText = 'Update News';
+            document.getElementById('news-form-title').innerText = '✏️ Edit News'; document.getElementById('news-btn').innerText = 'Update News';
         }
         async function deleteNews(id) { if(confirm('Delete?')) { await fetch(`/news/${id}`, { method: 'DELETE' }); loadManageNews(); } }
         document.getElementById('add-news-form').addEventListener('submit', async (e) => {
@@ -196,7 +218,36 @@
             } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
         });
 
-        loadMessages(); loadManageFeatures(); loadManageStaff(); loadManageNews();
+        // NEW: Gallery Management Logic
+        async function loadManageGallery() {
+            const list = document.getElementById('manage-gallery-list');
+            try { const res = await fetch('/gallery'); const data = await res.json(); allGalleryData = data.images;
+                if (allGalleryData.length === 0) { list.innerHTML = '<p>No gallery photos yet.</p>'; return; }
+                list.innerHTML = allGalleryData.map(g => `<div class="manage-card"><div class="card-content"><img src="${g.imageUrl}"><div><strong>${g.caption}</strong><br><small style="color:#666;">${new Date(g.date).toLocaleDateString()}</small></div></div><button class="btn-delete" onclick="deleteGallery('${g._id}')">Delete</button></div>`).join('');
+            } catch (e) { list.innerHTML = '<p>Error.</p>'; }
+        }
+        async function deleteGallery(id) { if(confirm('Delete this photo?')) { await fetch(`/gallery/${id}`, { method: 'DELETE' }); loadManageGallery(); } }
+        
+        document.getElementById('add-gallery-form').addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            if (!currentGalleryPhoto) { alert('Please select a photo first!'); return; }
+            const status = document.getElementById('gallery-status'); status.innerText = 'Uploading...'; status.style.color = 'blue';
+            const data = { imageUrl: currentGalleryPhoto, caption: document.getElementById('galleryCaption').value };
+            
+            try {
+                const res = await fetch('/gallery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if (res.ok) {
+                    status.innerText = '✅ Uploaded!'; status.style.color = 'green'; 
+                    document.getElementById('add-gallery-form').reset(); 
+                    document.getElementById('galleryPhotoPreview').style.display = 'none'; 
+                    currentGalleryPhoto = ''; 
+                    loadManageGallery();
+                } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
+            } catch (err) { status.innerText = '❌ Network Error'; status.style.color = 'red'; }
+        });
+
+        // Initialize all loaders
+        loadMessages(); loadManageFeatures(); loadManageStaff(); loadManageNews(); loadManageGallery();
     </script>
 </body>
 </html>
