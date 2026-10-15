@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Gallery - Oaklands Nursery and Primary School</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .page-header { background: var(--primary-color); color: white; text-align: center; padding: 60px 20px; margin-bottom: 40px; }
+        .page-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .page-header p { font-size: 1.1rem; opacity: 0.9; }
+        
+        /* Gallery Grid Styles */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .gallery-item { position: relative; overflow: hidden; border-radius: 10px; cursor: pointer; box-shadow: var(--shadow); aspect-ratio: 4/3; background: #e5e7eb; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .gallery-item:hover img { transform: scale(1.08); }
+        .gallery-item .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(21, 128, 61, 0.6); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; color: white; text-align: center; padding: 10px; }
+        .gallery-item:hover .overlay { opacity: 1; }
+        .gallery-item .overlay i { font-size: 2.5rem; margin-bottom: 10px; }
+        .gallery-item .overlay p { font-weight: 600; font-size: 1rem; margin: 0; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <img src="/logo.png" alt="Oaklands School Logo" class="site-logo">
+                <div class="logo-text"><span class="logo-title">Oaklands</span><span class="logo-subtitle">Nursery & Primary School</span></div>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/gallery.html" style="color: var(--primary-color); font-weight: bold;">Gallery</a></li>
+                <li><a href="/#news">News</a></li>
+                <li><a href="/staff.html">Staff</a></li>
+                <li><a href="/contact.html" class="btn-nav">Contact Us</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <h1>School Gallery</h1>
+            <p>A glimpse into life, learning, and facilities at Oaklands Schools.</p>
+        </div>
+    </header>
+
+    <section class="section-padding bg-light">
+        <div class="container">
+            <!-- Dynamic Gallery Grid -->
+            <div id="dynamic-gallery" class="gallery-grid">
+                <p class="loading-text" style="grid-column: 1/-1; text-align: center;">Loading gallery photos...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Popup Modal -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-btn">&times;</span>
+        <img class="modal-content" id="modalImg">
+    </div>
+
+    <footer><div class="container"><p>&copy; 2026 Oaklands Nursery and Primary School. All rights reserved.</p></div></footer>
+    <script src="script.js"></script>
+</body>
+</html>
