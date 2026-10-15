@@ -4,23 +4,21 @@ const contactSchema = new mongoose.Schema({
   name: String, email: String, message: String, date: { type: Date, default: Date.now }
 });
 
+// UPDATED: Added 'department' field
 const staffSchema = new mongoose.Schema({
-  name: String, role: String, photoUrl: String, bio: String
+  name: String, 
+  role: String, 
+  photoUrl: String, 
+  bio: String,
+  department: { type: String, default: 'Primary' } 
 });
 
-// UPDATED: Added eventUrl to the news schema
 const newsSchema = new mongoose.Schema({
-  title: String, 
-  date: { type: Date, default: Date.now }, 
-  description: String, 
-  type: String,
-  eventUrl: String // Optional link for the event
+  title: String, date: { type: Date, default: Date.now }, description: String, type: String, eventUrl: String
 });
 
 const featureSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  icon: { type: String, default: 'fa-star' }
+  title: String, description: String, icon: { type: String, default: 'fa-star' }
 });
 
 const Contact = mongoose.model('Contact', contactSchema);
