@@ -2,99 +2,285 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Oaklands School</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f7f6; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        h2 { color: #15803d; border-bottom: 2px solid #22c55e; padding-bottom: 10px; margin-top: 30px; }
-        .manage-card { background: #f3f4f6; padding: 15px; margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .manage-card img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; margin-right: 15px; }
-        .card-content { display: flex; align-items: center; flex-grow: 1; }
-        form { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        input, textarea, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
-        button { padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; border: none; }
-        .btn-primary { background: #15803d; color: white; width: 100%; font-size: 1rem; }
-        .btn-edit { background: #3b82f6; color: white; margin-right: 5px; }
-        .btn-delete { background: #ef4444; color: white; }
-        .nav-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #15803d; font-weight: bold; }
-        .img-preview { max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover; margin-top: 10px; display: none; border: 2px solid #15803d; }
-        .gallery-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 5px; margin-top: 10px; display: none; border: 1px solid #ccc;}
+        :root {
+            --primary: #15803d;
+            --primary-hover: #166534;
+            --secondary: #22c55e;
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-body); color: var(--text-main); display: flex; min-height: 100vh; }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 260px; background: var(--bg-card); border-right: 1px solid var(--border);
+            position: fixed; height: 100vh; padding: 20px 0; display: flex; flex-direction: column;
+            z-index: 100; transition: transform 0.3s ease;
+        }
+        .sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        .sidebar-header h2 { color: var(--primary); font-size: 1.4rem; font-weight: 700; }
+        .sidebar-header p { font-size: 0.8rem; color: var(--text-muted); }
+        .nav-menu { list-style: none; flex-grow: 1; }
+        .nav-menu li a {
+            display: flex; align-items: center; gap: 12px; padding: 12px 20px;
+            color: var(--text-muted); text-decoration: none; font-weight: 500; transition: all 0.2s;
+        }
+        .nav-menu li a:hover, .nav-menu li a.active { background: #f0fdf4; color: var(--primary); border-right: 3px solid var(--primary); }
+        .nav-menu li a i { width: 20px; text-align: center; }
+        .sidebar-footer { padding: 20px; border-top: 1px solid var(--border); }
+        .btn-back { display: block; text-align: center; background: var(--bg-body); color: var(--text-main); padding: 10px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background 0.2s; }
+        .btn-back:hover { background: var(--border); }
+
+        /* --- Main Content --- */
+        .main-content { margin-left: 260px; flex-grow: 1; padding: 30px; width: calc(100% - 260px); }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .page-header h1 { font-size: 1.8rem; color: var(--text-main); }
+        .page-header p { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* --- Cards & Sections --- */
+        .section-card { background: var(--bg-card); border-radius: 12px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 30px; scroll-margin-top: 20px; }
+        .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--primary); border-bottom: 2px solid #f0fdf4; padding-bottom: 10px; }
+        
+        /* --- Lists --- */
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f9fafb; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border); transition: transform 0.2s; }
+        .list-item:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .item-info { display: flex; align-items: center; gap: 15px; flex-grow: 1; }
+        .item-thumb { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #e5e7eb; }
+        .item-details h4 { font-size: 1rem; margin-bottom: 2px; }
+        .item-details p { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background: var(--primary); color: white; margin-right: 8px; }
+        .badge-blue { background: var(--info); }
+
+        /* --- Forms --- */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+        input, select, textarea { padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; transition: all 0.2s; background: #f9fafb; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.1); }
+        textarea { resize: vertical; min-height: 80px; }
+        
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; margin-top: 10px; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+        .btn-edit { background: var(--info); color: white; }
+        .btn-edit:hover { background: #2563eb; }
+        .btn-delete { background: var(--danger); color: white; }
+        .btn-delete:hover { background: #dc2626; }
+
+        .img-preview { max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover; margin-top: 10px; display: none; border: 3px solid var(--primary); }
+        .gallery-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid var(--border); background: #f9fafb; }
+
+        /* --- Toast Notifications --- */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 15px 20px; border-radius: 8px; color: white; font-weight: 500; box-shadow: var(--shadow-lg); transform: translateX(120%); transition: transform 0.3s ease; display: flex; align-items: center; gap: 10px; }
+        .toast.show { transform: translateX(0); }
+        .toast-success { background: var(--primary); }
+        .toast-error { background: var(--danger); }
+        .toast-info { background: var(--info); }
+
+        /* --- Mobile Responsive --- */
+        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 101; background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-size: 1.2rem; cursor: pointer; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+            .main-content { margin-left: 0; width: 100%; padding: 20px; padding-top: 70px; }
+            .mobile-menu-btn { display: block; }
+            .form-grid { grid-template-columns: 1fr; }
+            .list-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .list-item .item-actions { width: 100%; display: flex; justify-content: flex-end; gap: 10px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="/" class="nav-link">← Back to Main Website</a>
-        
-        <h2>📬 Contact Messages</h2>
-        <div id="messages-list">Loading...</div>
 
-        <h2> Manage "Why Choose Oaklands" Features</h2>
-        <div id="manage-features-list">Loading...</div>
-        <h3 id="feature-form-title" style="margin-top:20px;">➕ Add New Feature</h3>
-        <form id="add-feature-form">
-            <input type="text" id="featureTitle" placeholder="Title" required>
-            <select id="featureIcon" required>
-                <option value="fa-book-open"> Book</option><option value="fa-users">👥 Users</option>
-                <option value="fa-palette">🎨 Palette</option><option value="fa-graduation-cap"> Cap</option>
-                <option value="fa-heart">❤️ Heart</option><option value="fa-globe">🌍 Globe</option><option value="fa-star">⭐ Star</option>
-            </select>
-            <textarea id="featureDesc" placeholder="Description" required></textarea>
-            <button type="submit" class="btn-primary" id="feature-btn">Add Feature</button>
-        </form>
-        <p id="feature-status" style="margin-top: 10px; font-weight: bold;"></p>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
 
-        <h2>👥 Manage Staff</h2>
-        <div id="manage-staff-list">Loading...</div>
-        <h3 id="staff-form-title" style="margin-top:20px;">➕ Add New Staff</h3>
-        <form id="add-staff-form">
-            <input type="text" id="staffName" placeholder="Full Name" required>
-            <input type="text" id="staffRole" placeholder="Role" required>
-            <select id="staffDept" required>
-                <option value="Administration">Administration</option>
-                <option value="Primary">Primary Department</option>
-                <option value="Nursery">Nursery Department</option>
-            </select>
-            <label style="font-weight: bold; margin-top: 5px;">Upload Photo:</label>
-            <input type="file" id="staffPhotoFile" accept="image/*" onchange="handleImageUpload(this, 'staff')">
-            <img id="staffPhotoPreview" class="img-preview" src="" alt="Preview">
-            <textarea id="staffBio" placeholder="Biography" required></textarea>
-            <button type="submit" class="btn-primary" id="staff-btn">Add Staff</button>
-        </form>
-        <p id="staff-status" style="margin-top: 10px; font-weight: bold;"></p>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-school"></i> Oaklands</h2>
+            <p>Admin Dashboard</p>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#section-messages"><i class="fas fa-envelope"></i> Messages</a></li>
+            <li><a href="#section-features"><i class="fas fa-star"></i> Features</a></li>
+            <li><a href="#section-staff"><i class="fas fa-users"></i> Staff</a></li>
+            <li><a href="#section-news"><i class="fas fa-newspaper"></i> News</a></li>
+            <li><a href="#section-gallery"><i class="fas fa-images"></i> Gallery</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="/" class="btn-back"><i class="fas fa-arrow-left"></i> View Website</a>
+        </div>
+    </aside>
 
-        <h2>📰 Manage News</h2>
-        <div id="manage-news-list">Loading...</div>
-        <h3 id="news-form-title" style="margin-top:20px;">➕ Post New News</h3>
-        <form id="add-news-form">
-            <input type="text" id="newsTitle" placeholder="Title" required>
-            <select id="newsType" required><option value="Event">Event</option><option value="Announcement">Announcement</option><option value="Sports">Sports</option></select>
-            <textarea id="newsDesc" placeholder="Description" required></textarea>
-            <input type="url" id="newsLink" placeholder="Event Link (optional)">
-            <button type="submit" class="btn-primary" id="news-btn">Post News</button>
-        </form>
-        <p id="news-status" style="margin-top: 10px; font-weight: bold;"></p>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>Welcome, Admin! 👋</h1>
+                <p>Manage your school's content from here.</p>
+            </div>
+        </div>
 
-        <!-- NEW: Gallery Management Section -->
-        <h2>🖼️ Manage Gallery</h2>
-        <div id="manage-gallery-list">Loading...</div>
-        <h3 id="gallery-form-title" style="margin-top:20px;"> Add New Photo to Gallery</h3>
-        <form id="add-gallery-form">
-            <label style="font-weight: bold;">Select Photo from Computer:</label>
-            <input type="file" id="galleryPhotoFile" accept="image/*" onchange="handleImageUpload(this, 'gallery')" required>
-            <img id="galleryPhotoPreview" class="gallery-preview" src="" alt="Preview">
-            <input type="text" id="galleryCaption" placeholder="Short Caption (e.g., Sports Day 2024)" required>
-            <button type="submit" class="btn-primary" id="gallery-btn">Upload to Gallery</button>
-        </form>
-        <p id="gallery-status" style="margin-top: 10px; font-weight: bold;"></p>
-    </div>
+        <!-- Messages Section -->
+        <div id="section-messages" class="section-card">
+            <h2 class="section-title"><i class="fas fa-envelope-open-text"></i> Contact Messages</h2>
+            <div id="messages-list"><p style="color: var(--text-muted);">Loading messages...</p></div>
+        </div>
+
+        <!-- Features Section -->
+        <div id="section-features" class="section-card">
+            <h2 class="section-title"><i class="fas fa-star"></i> Manage Features</h2>
+            <div id="manage-features-list"><p style="color: var(--text-muted);">Loading features...</p></div>
+            
+            <h3 style="margin-top: 25px; font-size: 1.1rem;" id="feature-form-title">Add New Feature</h3>
+            <form id="add-feature-form" class="form-grid">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="featureTitle" placeholder="e.g., Academic Excellence" required>
+                </div>
+                <div class="form-group">
+                    <label>Icon</label>
+                    <select id="featureIcon" required>
+                        <option value="fa-book-open">📖 Book</option><option value="fa-users">👥 Users</option>
+                        <option value="fa-palette"> Palette</option><option value="fa-graduation-cap">🎓 Cap</option>
+                        <option value="fa-heart">❤️ Heart</option><option value="fa-globe">🌍 Globe</option><option value="fa-star">⭐ Star</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Description</label>
+                    <textarea id="featureDesc" placeholder="Describe this feature..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary full-width" id="feature-btn" style="grid-column: 1/-1;">Add Feature</button>
+            </form>
+        </div>
+
+        <!-- Staff Section -->
+        <div id="section-staff" class="section-card">
+            <h2 class="section-title"><i class="fas fa-chalkboard-teacher"></i> Manage Staff</h2>
+            <div id="manage-staff-list"><p style="color: var(--text-muted);">Loading staff...</p></div>
+            
+            <h3 style="margin-top: 25px; font-size: 1.1rem;" id="staff-form-title">Add New Staff</h3>
+            <form id="add-staff-form" class="form-grid">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="staffName" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <input type="text" id="staffRole" placeholder="e.g., Headteacher" required>
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <select id="staffDept" required>
+                        <option value="Administration">Administration</option>
+                        <option value="Primary">Primary Department</option>
+                        <option value="Nursery">Nursery Department</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Upload Photo</label>
+                    <input type="file" id="staffPhotoFile" accept="image/*" onchange="handleImageUpload(this, 'staff')">
+                    <img id="staffPhotoPreview" class="img-preview" src="" alt="Preview">
+                </div>
+                <div class="form-group full-width">
+                    <label>Biography</label>
+                    <textarea id="staffBio" placeholder="Short bio..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary full-width" id="staff-btn" style="grid-column: 1/-1;">Add Staff</button>
+            </form>
+        </div>
+
+        <!-- News Section -->
+        <div id="section-news" class="section-card">
+            <h2 class="section-title"><i class="fas fa-newspaper"></i> Manage News</h2>
+            <div id="manage-news-list"><p style="color: var(--text-muted);">Loading news...</p></div>
+            
+            <h3 style="margin-top: 25px; font-size: 1.1rem;" id="news-form-title">Post New News</h3>
+            <form id="add-news-form" class="form-grid">
+                <div class="form-group full-width">
+                    <label>Title</label>
+                    <input type="text" id="newsTitle" placeholder="News headline" required>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="newsType" required>
+                        <option value="Event">Event</option><option value="Announcement">Announcement</option><option value="Sports">Sports</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Event Link (Optional)</label>
+                    <input type="url" id="newsLink" placeholder="https://...">
+                </div>
+                <div class="form-group full-width">
+                    <label>Description</label>
+                    <textarea id="newsDesc" placeholder="News details..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary full-width" id="news-btn" style="grid-column: 1/-1;">Post News</button>
+            </form>
+        </div>
+
+        <!-- Gallery Section -->
+        <div id="section-gallery" class="section-card">
+            <h2 class="section-title"><i class="fas fa-images"></i> Manage Gallery</h2>
+            <div id="manage-gallery-list"><p style="color: var(--text-muted);">Loading gallery...</p></div>
+            
+            <h3 style="margin-top: 25px; font-size: 1.1rem;">Upload New Photo</h3>
+            <form id="add-gallery-form" class="form-grid">
+                <div class="form-group full-width">
+                    <label>Select Photo</label>
+                    <input type="file" id="galleryPhotoFile" accept="image/*" onchange="handleImageUpload(this, 'gallery')" required>
+                    <img id="galleryPhotoPreview" class="gallery-preview" src="" alt="Preview">
+                </div>
+                <div class="form-group full-width">
+                    <label>Caption</label>
+                    <input type="text" id="galleryCaption" placeholder="e.g., Sports Day 2024" required>
+                </div>
+                <button type="submit" class="btn btn-primary full-width" id="gallery-btn" style="grid-column: 1/-1;">Upload to Gallery</button>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
 
     <script>
-        let allFeaturesData = [], allStaffData = [], allMessagesData = [], allNewsData = [], allGalleryData = [];
-        let currentStaffPhoto = ''; 
-        let currentGalleryPhoto = ''; 
+        // --- UI Helpers ---
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
+            toast.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+        }
 
-        // Universal Image Compressor
+        // --- Data & State ---
+        let allFeaturesData = [], allStaffData = [], allMessagesData = [], allNewsData = [], allGalleryData = [];
+        let currentStaffPhoto = '', currentGalleryPhoto = ''; 
+
         function handleImageUpload(input, type) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -103,7 +289,6 @@
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
                         let width = img.width, height = img.height;
-                        // Compress to max 800px for gallery, 300px for staff
                         const maxSize = type === 'gallery' ? 800 : 300;
                         if (width > maxSize) { height *= maxSize / width; width = maxSize; }
                         if (height > maxSize) { width *= maxSize / height; height = maxSize; }
@@ -127,126 +312,189 @@
             }
         }
 
+        // --- Messages ---
         async function loadMessages() {
             const list = document.getElementById('messages-list');
-            try { const res = await fetch('/contact'); const data = await res.json(); allMessagesData = data.messages;
-                if (allMessagesData.length === 0) { list.innerHTML = '<p>No messages.</p>'; return; }
-                list.innerHTML = allMessagesData.map(m => `<div class="manage-card"><div><strong>${m.name}</strong> (${m.email})<br><small>${new Date(m.date).toLocaleDateString()}</small><p>${m.message}</p></div><button class="btn-delete" onclick="deleteMessage('${m._id}')">Delete</button></div>`).join('');
-            } catch (e) { list.innerHTML = '<p>Error.</p>'; }
+            try { 
+                const res = await fetch('/contact'); const data = await res.json(); allMessagesData = data.messages;
+                if (allMessagesData.length === 0) { list.innerHTML = '<p style="color: var(--text-muted);">No messages yet.</p>'; return; }
+                list.innerHTML = allMessagesData.map(m => `
+                    <div class="list-item">
+                        <div class="item-info">
+                            <div class="item-details">
+                                <h4>${m.name} <span style="font-weight:400; font-size:0.85rem; color:var(--text-muted);">(${m.email})</span></h4>
+                                <p>${m.message}</p>
+                                <small style="color:var(--text-muted); font-size:0.75rem;">${new Date(m.date).toLocaleDateString()}</small>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-sm btn-delete" onclick="deleteMessage('${m._id}')"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    </div>`).join('');
+            } catch (e) { list.innerHTML = '<p style="color:var(--danger);">Error loading messages.</p>'; }
         }
-        async function deleteMessage(id) { if(confirm('Delete?')) { await fetch(`/contact/${id}`, { method: 'DELETE' }); loadMessages(); } }
+        async function deleteMessage(id) { if(confirm('Delete this message?')) { await fetch(`/contact/${id}`, { method: 'DELETE' }); showToast('Message deleted!'); loadMessages(); } }
 
+        // --- Features ---
         let currentFeatureId = null;
         async function loadManageFeatures() {
             const list = document.getElementById('manage-features-list');
-            try { const res = await fetch('/features'); const data = await res.json(); allFeaturesData = data.features; 
-                if (allFeaturesData.length === 0) { list.innerHTML = '<p>No features yet.</p>'; return; }
-                list.innerHTML = allFeaturesData.map(f => `<div class="manage-card"><div><i class="fas ${f.icon}"></i> <strong>${f.title}</strong></div><div><button class="btn-edit" onclick="editFeatureById('${f._id}')">Edit</button><button class="btn-delete" onclick="deleteFeature('${f._id}')">Delete</button></div></div>`).join('');
-            } catch (e) { list.innerHTML = '<p>Error.</p>'; }
+            try { 
+                const res = await fetch('/features'); const data = await res.json(); allFeaturesData = data.features; 
+                if (allFeaturesData.length === 0) { list.innerHTML = '<p style="color: var(--text-muted);">No features yet.</p>'; return; }
+                list.innerHTML = allFeaturesData.map(f => `
+                    <div class="list-item">
+                        <div class="item-info">
+                            <div style="background:#f0fdf4; color:var(--primary); width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center;"><i class="fas ${f.icon}"></i></div>
+                            <div class="item-details"><h4>${f.title}</h4><p>${f.description.substring(0, 50)}...</p></div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-sm btn-edit" onclick="editFeatureById('${f._id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-delete" onclick="deleteFeature('${f._id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`).join('');
+            } catch (e) { list.innerHTML = '<p style="color:var(--danger);">Error.</p>'; }
         }
-        function editFeatureById(id) { const f = allFeaturesData.find(feat => feat._id === id); if (!f) return; currentFeatureId = id;
+        function editFeatureById(id) { 
+            const f = allFeaturesData.find(feat => feat._id === id); if (!f) return; currentFeatureId = id;
             document.getElementById('featureTitle').value = f.title; document.getElementById('featureIcon').value = f.icon; document.getElementById('featureDesc').value = f.description;
-            document.getElementById('feature-form-title').innerText = '✏️ Edit Feature'; document.getElementById('feature-btn').innerText = 'Update Feature';
+            document.getElementById('feature-form-title').innerText = 'Edit Feature'; document.getElementById('feature-btn').innerText = 'Update Feature';
+            document.getElementById('section-features').scrollIntoView({behavior: 'smooth'});
         }
-        async function deleteFeature(id) { if(confirm('Delete?')) { await fetch(`/features/${id}`, { method: 'DELETE' }); loadManageFeatures(); } }
+        async function deleteFeature(id) { if(confirm('Delete?')) { await fetch(`/features/${id}`, { method: 'DELETE' }); showToast('Feature deleted!'); loadManageFeatures(); } }
         document.getElementById('add-feature-form').addEventListener('submit', async (e) => {
-            e.preventDefault(); const status = document.getElementById('feature-status');
+            e.preventDefault(); 
             const data = { title: document.getElementById('featureTitle').value, icon: document.getElementById('featureIcon').value, description: document.getElementById('featureDesc').value };
             const url = currentFeatureId ? `/features/${currentFeatureId}` : '/features';
             const res = await fetch(url, { method: currentFeatureId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-            if (res.ok) { status.innerText = '✅ Saved!'; status.style.color = 'green'; document.getElementById('add-feature-form').reset(); currentFeatureId = null;
-                document.getElementById('feature-form-title').innerText = '➕ Add New Feature'; document.getElementById('feature-btn').innerText = 'Add Feature'; loadManageFeatures();
-            } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
+            if (res.ok) { 
+                showToast('Feature saved successfully!'); document.getElementById('add-feature-form').reset(); currentFeatureId = null;
+                document.getElementById('feature-form-title').innerText = 'Add New Feature'; document.getElementById('feature-btn').innerText = 'Add Feature'; loadManageFeatures();
+            } else { showToast('Error saving feature.', 'error'); }
         });
 
+        // --- Staff ---
         let currentStaffId = null;
         async function loadManageStaff() {
             const list = document.getElementById('manage-staff-list');
-            try { const res = await fetch('/staff'); const data = await res.json(); allStaffData = data.staff; 
-                if (allStaffData.length === 0) { list.innerHTML = '<p>No staff yet.</p>'; return; }
-                list.innerHTML = allStaffData.map(s => `<div class="manage-card"><div class="card-content">${s.photoUrl ? `<img src="${s.photoUrl}">` : ''}<div><strong>${s.name}</strong> - ${s.role} <br><small style="color:#666;">(${s.department || 'Primary'})</small></div></div><div><button class="btn-edit" onclick="editStaffById('${s._id}')">Edit</button><button class="btn-delete" onclick="deleteStaff('${s._id}')">Delete</button></div></div>`).join('');
-            } catch (e) { list.innerHTML = '<p>Error.</p>'; }
+            try { 
+                const res = await fetch('/staff'); const data = await res.json(); allStaffData = data.staff; 
+                if (allStaffData.length === 0) { list.innerHTML = '<p style="color: var(--text-muted);">No staff yet.</p>'; return; }
+                list.innerHTML = allStaffData.map(s => `
+                    <div class="list-item">
+                        <div class="item-info">
+                            <img src="${s.photoUrl || 'https://via.placeholder.com/50'}" class="item-thumb" alt="${s.name}">
+                            <div class="item-details">
+                                <h4>${s.name}</h4>
+                                <p>${s.role} <span class="badge">${s.department || 'Primary'}</span></p>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-sm btn-edit" onclick="editStaffById('${s._id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-delete" onclick="deleteStaff('${s._id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`).join('');
+            } catch (e) { list.innerHTML = '<p style="color:var(--danger);">Error.</p>'; }
         }
         function editStaffById(id) {
             const s = allStaffData.find(staff => staff._id === id); if (!s) return; currentStaffId = id;
             document.getElementById('staffName').value = s.name; document.getElementById('staffRole').value = s.role; 
-            document.getElementById('staffDept').value = s.department || 'Primary'; 
-            document.getElementById('staffBio').value = s.bio;
+            document.getElementById('staffDept').value = s.department || 'Primary'; document.getElementById('staffBio').value = s.bio;
             currentStaffPhoto = s.photoUrl || '';
             const preview = document.getElementById('staffPhotoPreview');
             if (currentStaffPhoto) { preview.src = currentStaffPhoto; preview.style.display = 'block'; } else { preview.style.display = 'none'; }
-            document.getElementById('staff-form-title').innerText = '✏️ Edit Staff'; document.getElementById('staff-btn').innerText = 'Update Staff';
+            document.getElementById('staff-form-title').innerText = 'Edit Staff'; document.getElementById('staff-btn').innerText = 'Update Staff';
+            document.getElementById('section-staff').scrollIntoView({behavior: 'smooth'});
         }
-        async function deleteStaff(id) { if(confirm('Delete?')) { await fetch(`/staff/${id}`, { method: 'DELETE' }); loadManageStaff(); } }
-        
+        async function deleteStaff(id) { if(confirm('Delete?')) { await fetch(`/staff/${id}`, { method: 'DELETE' }); showToast('Staff deleted!'); loadManageStaff(); } }
         document.getElementById('add-staff-form').addEventListener('submit', async (e) => {
-            e.preventDefault(); const status = document.getElementById('staff-status'); status.innerText = 'Saving...'; status.style.color = 'blue';
+            e.preventDefault(); 
             const data = { name: document.getElementById('staffName').value, role: document.getElementById('staffRole').value, 
                            department: document.getElementById('staffDept').value, photoUrl: currentStaffPhoto, bio: document.getElementById('staffBio').value };
             const url = currentStaffId ? `/staff/${currentStaffId}` : '/staff';
-            try {
-                const res = await fetch(url, { method: currentStaffId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-                if (res.ok) {
-                    status.innerText = '✅ Saved!'; status.style.color = 'green'; document.getElementById('add-staff-form').reset(); 
-                    document.getElementById('staffPhotoPreview').style.display = 'none'; currentStaffPhoto = ''; currentStaffId = null;
-                    document.getElementById('staff-form-title').innerText = '➕ Add New Staff'; document.getElementById('staff-btn').innerText = 'Add Staff'; loadManageStaff();
-                } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
-            } catch (err) { status.innerText = '❌ Network Error'; status.style.color = 'red'; }
+            const res = await fetch(url, { method: currentStaffId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (res.ok) {
+                showToast('Staff saved successfully!'); document.getElementById('add-staff-form').reset(); 
+                document.getElementById('staffPhotoPreview').style.display = 'none'; currentStaffPhoto = ''; currentStaffId = null;
+                document.getElementById('staff-form-title').innerText = 'Add New Staff'; document.getElementById('staff-btn').innerText = 'Add Staff'; loadManageStaff();
+            } else { showToast('Error saving staff.', 'error'); }
         });
 
+        // --- News ---
         let currentNewsId = null;
         async function loadManageNews() {
             const list = document.getElementById('manage-news-list');
-            try { const res = await fetch('/news'); const data = await res.json(); allNewsData = data.news;
-                if (allNewsData.length === 0) { list.innerHTML = '<p>No news yet.</p>'; return; }
-                list.innerHTML = allNewsData.map(n => `<div class="manage-card"><div><span style="background:#15803d; color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem; margin-right:5px;">${n.type}</span><strong>${n.title}</strong></div><div><button class="btn-edit" onclick="editNewsById('${n._id}')">Edit</button><button class="btn-delete" onclick="deleteNews('${n._id}')">Delete</button></div></div>`).join('');
-            } catch (e) { list.innerHTML = '<p>Error.</p>'; }
+            try { 
+                const res = await fetch('/news'); const data = await res.json(); allNewsData = data.news;
+                if (allNewsData.length === 0) { list.innerHTML = '<p style="color: var(--text-muted);">No news yet.</p>'; return; }
+                list.innerHTML = allNewsData.map(n => `
+                    <div class="list-item">
+                        <div class="item-info">
+                            <div class="item-details">
+                                <h4>${n.title}</h4>
+                                <p><span class="badge">${n.type}</span> ${new Date(n.date).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-sm btn-edit" onclick="editNewsById('${n._id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-delete" onclick="deleteNews('${n._id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`).join('');
+            } catch (e) { list.innerHTML = '<p style="color:var(--danger);">Error.</p>'; }
         }
-        function editNewsById(id) { const n = allNewsData.find(news => news._id === id); if (!n) return; currentNewsId = id;
+        function editNewsById(id) { 
+            const n = allNewsData.find(news => news._id === id); if (!n) return; currentNewsId = id;
             document.getElementById('newsTitle').value = n.title; document.getElementById('newsType').value = n.type; document.getElementById('newsDesc').value = n.description;
             document.getElementById('newsLink').value = n.eventUrl || '';
-            document.getElementById('news-form-title').innerText = '✏️ Edit News'; document.getElementById('news-btn').innerText = 'Update News';
+            document.getElementById('news-form-title').innerText = 'Edit News'; document.getElementById('news-btn').innerText = 'Update News';
+            document.getElementById('section-news').scrollIntoView({behavior: 'smooth'});
         }
-        async function deleteNews(id) { if(confirm('Delete?')) { await fetch(`/news/${id}`, { method: 'DELETE' }); loadManageNews(); } }
+        async function deleteNews(id) { if(confirm('Delete?')) { await fetch(`/news/${id}`, { method: 'DELETE' }); showToast('News deleted!'); loadManageNews(); } }
         document.getElementById('add-news-form').addEventListener('submit', async (e) => {
-            e.preventDefault(); const status = document.getElementById('news-status');
+            e.preventDefault(); 
             const data = { title: document.getElementById('newsTitle').value, type: document.getElementById('newsType').value, description: document.getElementById('newsDesc').value, eventUrl: document.getElementById('newsLink').value };
             const url = currentNewsId ? `/news/${currentNewsId}` : '/news';
             const res = await fetch(url, { method: currentNewsId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-            if (res.ok) { status.innerText = '✅ Saved!'; status.style.color = 'green'; document.getElementById('add-news-form').reset(); currentNewsId = null;
-                document.getElementById('news-form-title').innerText = '➕ Post New News'; document.getElementById('news-btn').innerText = 'Post News'; loadManageNews();
-            } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
+            if (res.ok) { 
+                showToast('News saved successfully!'); document.getElementById('add-news-form').reset(); currentNewsId = null;
+                document.getElementById('news-form-title').innerText = 'Post New News'; document.getElementById('news-btn').innerText = 'Post News'; loadManageNews();
+            } else { showToast('Error saving news.', 'error'); }
         });
 
-        // NEW: Gallery Management Logic
+        // --- Gallery ---
         async function loadManageGallery() {
             const list = document.getElementById('manage-gallery-list');
-            try { const res = await fetch('/gallery'); const data = await res.json(); allGalleryData = data.images;
-                if (allGalleryData.length === 0) { list.innerHTML = '<p>No gallery photos yet.</p>'; return; }
-                list.innerHTML = allGalleryData.map(g => `<div class="manage-card"><div class="card-content"><img src="${g.imageUrl}"><div><strong>${g.caption}</strong><br><small style="color:#666;">${new Date(g.date).toLocaleDateString()}</small></div></div><button class="btn-delete" onclick="deleteGallery('${g._id}')">Delete</button></div>`).join('');
-            } catch (e) { list.innerHTML = '<p>Error.</p>'; }
+            try { 
+                const res = await fetch('/gallery'); const data = await res.json(); allGalleryData = data.images;
+                if (allGalleryData.length === 0) { list.innerHTML = '<p style="color: var(--text-muted);">No gallery photos yet.</p>'; return; }
+                list.innerHTML = allGalleryData.map(g => `
+                    <div class="list-item">
+                        <div class="item-info">
+                            <img src="${g.imageUrl}" class="item-thumb" alt="${g.caption}">
+                            <div class="item-details">
+                                <h4>${g.caption}</h4>
+                                <p>${new Date(g.date).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-sm btn-delete" onclick="deleteGallery('${g._id}')"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    </div>`).join('');
+            } catch (e) { list.innerHTML = '<p style="color:var(--danger);">Error.</p>'; }
         }
-        async function deleteGallery(id) { if(confirm('Delete this photo?')) { await fetch(`/gallery/${id}`, { method: 'DELETE' }); loadManageGallery(); } }
-        
+        async function deleteGallery(id) { if(confirm('Delete this photo?')) { await fetch(`/gallery/${id}`, { method: 'DELETE' }); showToast('Photo deleted!'); loadManageGallery(); } }
         document.getElementById('add-gallery-form').addEventListener('submit', async (e) => {
             e.preventDefault(); 
-            if (!currentGalleryPhoto) { alert('Please select a photo first!'); return; }
-            const status = document.getElementById('gallery-status'); status.innerText = 'Uploading...'; status.style.color = 'blue';
+            if (!currentGalleryPhoto) { showToast('Please select a photo first!', 'error'); return; }
             const data = { imageUrl: currentGalleryPhoto, caption: document.getElementById('galleryCaption').value };
-            
-            try {
-                const res = await fetch('/gallery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-                if (res.ok) {
-                    status.innerText = '✅ Uploaded!'; status.style.color = 'green'; 
-                    document.getElementById('add-gallery-form').reset(); 
-                    document.getElementById('galleryPhotoPreview').style.display = 'none'; 
-                    currentGalleryPhoto = ''; 
-                    loadManageGallery();
-                } else { status.innerText = '❌ Error'; status.style.color = 'red'; }
-            } catch (err) { status.innerText = '❌ Network Error'; status.style.color = 'red'; }
+            const res = await fetch('/gallery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (res.ok) {
+                showToast('Photo uploaded successfully!'); document.getElementById('add-gallery-form').reset(); 
+                document.getElementById('galleryPhotoPreview').style.display = 'none'; currentGalleryPhoto = ''; loadManageGallery();
+            } else { showToast('Error uploading photo.', 'error'); }
         });
 
-        // Initialize all loaders
+        // Init
         loadMessages(); loadManageFeatures(); loadManageStaff(); loadManageNews(); loadManageGallery();
     </script>
 </body>
